@@ -22,3 +22,27 @@ select,
 textarea {
     max-width: 280px;
 }
+
+div.timerDiv {
+    text-align : center;
+    padding: 20px;
+}
+
+#time {
+    border: 2px black solid;
+    font-size: 100px;
+    padding: 20px;
+}
+
+#TimeControllerDiv {
+    padding: 20px;
+    text-align: center;
+}
+
+#timerStartBtn {
+    margin: 0px 30px 0px 0px;
+}
+
+
+
+
