@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNet.Identity;
 @model PomodoroGamify.Models.UserModel
+@Scripts.Render("~/Scripts/MyScripts/timer.js")
 @{
     ViewBag.Title = "Home Page";
 }
@@ -7,75 +8,251 @@
 <div id="emptyPadding"></div>
 @{ }
 
-<div class="timerDiv">
-    <text id="time">25:00</text>
-</div>
-<div id="TimeControllerDiv">
-    <button id="timerStartBtn" class="btn btn-primary" onclick="startTimer(60 * 1, $('#time'));">Start Timer</button>
-    <button id="timerStopBtn" class="btn btn-primary" onclick="stopTimer();">Stop Timer</button>
-</div>
+<div class="container">
+    <div class="row">
+        <div id="TimerAndControlsDiv" class="col-lg-6">
+            <div id="countdownDiv">
+                <text id="time">25:00</text>
+            </div>
+            <div id="TimeControllerDiv">
+                <button id="timerStartBtn" class="btn btn-primary" onclick="startTimer(60 * .2, $('#time'));">Start Timer</button>
+                <button id="timerStopBtn" class="btn btn-primary" disabled="disabled" onclick="stopTimer();">Stop Timer</button>
+            </div>
+        </div>
+        <div id="chart-area" class="col-lg-6">
+            <div id="progress"
+                 data-level=@Model.Level
+                 data-experienceToLevelUp=@Model.GetExperienceToLevelUp()>
+            </div>
+        </div>
+    </div>
 
-<h1 id="expToLevelHeader">Level: @Model.Level <br /> Experience Till Level : @Model.GetExperienceToLevelUp() <br /> Percent: @Model.getPercentageToLevel()</h1>
+    <div class="row">
+      <div class="col-lg-6">
+            <h2>Quests</h2>
+            <ul id="quests" class="list-group">
+                <li id="quest1" onclick="listSelected($('#quest1'));" class="list-group-item active d-flex justify-content-between align-items-center">
+                    Defeat the dragon that is terrorising the village!
+                    <span id=5>l2% Completed</span>
+                </li>
+                <li id="quest2" onclick="listSelected($('#quest2'));" value=5 class="list-group-item d-flex justify-content-between align-items-center">
+                    There has been a mystery attack on the castle...
+                    <span id=15>0% Completed</span>
+                </li>
+                <li id="quest3" onclick="listSelected($('#quest3'));" value =3 class="list-group-item d-flex justify-content-between align-items-center">
+                    Morbi leo risus
+                    <span id=100>1</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
 
 @section scripts
 {
-    <script>
+<script>
 
-        var timer;
+    var level = @Model.Level;
+    var totalExperience = @Model.Experience;
+    var percentage = @Model.getPercentageToLevel();
+    var experienceToLevelUp = @Model.GetExperienceToLevelUp();
+    var currentPercentage = percentage;
 
-        function startTimer(duration, display) {
-            jQuery("#timerStartBtn").prop("disabled", true);
+    var timer;
 
-            var minutes, seconds;
-            timer = setInterval(function () {
-                minutes = parseInt(duration / 60, 10);
-                seconds = parseInt(duration % 60, 10);
+    checkQuestsUnlocked();
 
 
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
+    function checkQuestsUnlocked() {
 
-                display.text(minutes + ":" + seconds);
+        var ul = document.getElementById("quests");
+        var items = ul.getElementsByTagName("span");
+        
 
-                if (--duration < 0) {
-                    $("#time").text("EXPIRED!");
-                    jQuery("#timerStartBtn").prop("disabled", false);
-                    clearInterval(timer);
-                    pomodoroCompleted();
-                    return;
-                }
+        for (var i = 0; i < items.length; ++i) {
 
-            }, 1000);
+            if (items[i].id <= level) {
+                $("#" + items[i].id).addClass("badge badge-primary badge-pill");
+
+            } else {
+                $("#" + items[i].id).addClass("btn-danger badge");
+                document.getElementById(items[i].id).innerHTML = "Locked unti level " + items[i].id;
+            }
         }
 
-        function stopTimer() {
-            bootbox.confirm("Are you sure you wish to stop the timer?", function (result) {
+    }
 
-                if (result) {
-                    clearInterval(timer);
-                    jQuery("#timerStartBtn").prop("disabled", false);
-                    $("#time").text("25:00");
-                }
 
-            });
+    function listSelected(display) {
+
+
+
+        if (display.hasClass("active")) {
+            display.removeClass("active");
+            return;
         }
 
-        function pomodoroCompleted() {
-            alert("Pomodoro was completed.");
+        var ul = document.getElementById("quests");
+        var items = ul.getElementsByTagName("li");
 
-            $.ajax({
-                url: "/Home/PomodoroCompleted",
-                method: "GET",
-                success: function () {
-                    alert("Successful.");
-                    $("#expToLevelHeader").load(location.href + " #expToLevelHeader")
-                }
-            });
+        for (var i = 0; i < items.length; ++i) {
+            $("#" + items[i].id).removeClass("active");
+        }
+        display.addClass("active");
+    }
+
+
+
+    function updateExperience() {
+        @{
+           Model.Experience = Model.Experience + 25;
+        }
+    }
+
+    function pomodoroCompleted() {
+
+        $.ajax({
+        url: "/Home/AjaxGet",
+        method: "GET",
+        success: function (data) {
+            var oldPercentage = currentPercentage;
+
+
+            level = data.Level;
+            totalExperience = data.Experience;
+            percentage = data.PercentageToLevel;
+            experienceToLevelUp = data.ExperienceToLevelUp
+            currentPercentage = percentage;
+
+
+            if (percentage < oldPercentage) {
+                percentage = percentage + (100 - oldPercentage);
+                    alert("Congradulations on level " + level + "! You have been awarded " +  level * 50 + " coins!");
+            } else {
+                percentage = percentage - oldPercentage;
+            }
+
+            iterate();
 
         }
+        });
+
+    }
 
 
 
-    </script>
+
+   //D3JS CODE BELOW - COULD NOT EASILY SEPERATE INTO OWN FILE
+
+    var wrapper = document.getElementById('progress');
+    var start = 0;
+
+
+    var colours = {
+        fill: '#337ab7',
+        track: '#555555',
+        text: '#337ab7',
+        stroke: '#FFFFFF',
+    }
+
+    var radius = 150;
+    var border = 15;
+    var strokeSpacing = 4;
+    var endAngle = Math.PI * 2;
+    var formatText = d3.format('.0%');
+    var boxSize = radius * 2;
+    var progress = start;
+    var step = percentage < start ? -0.01 : 0.01;
+
+    //Define the circle
+    var circle = d3.arc()
+        .startAngle(0)
+        .innerRadius(radius)
+        .outerRadius(radius - border);
+
+    //setup SVG wrapper
+    var svg = d3.select(wrapper)
+        .append('svg')
+        .attr('width', boxSize)
+        .attr('height', boxSize);
+
+    // ADD Group container
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + boxSize / 2 + ',' + boxSize / 2 + ')');
+
+    //Setup track
+    var track = g.append('g').attr('class', 'radial-progress');
+        track.append('path')
+        .attr('class', 'radial-progress__background')
+        .attr('fill', colours.track)
+        .attr('stroke', colours.stroke)
+        .attr('stroke-width', strokeSpacing + 'px')
+        .attr('d', circle.endAngle(endAngle));
+
+    //Add colour fill
+    var value = track.append('path')
+        .attr('class', 'radial-progress__value')
+        .attr('fill', colours.fill)
+        .attr('stroke', colours.stroke)
+        .attr('stroke-width', strokeSpacing + 'px');
+
+    //Add text value
+    var numberText = track.append('text')
+        .style("font-size", "20px")
+        .style("font-weight", "bold")
+        .attr('class', 'radial-progress__text')
+        .attr('fill', colours.text)
+        .attr('text-anchor', 'middle')
+        .attr('dy', '-50');
+
+    var numberText2 = track.append('text')
+        .style("font-size", "20px")
+        .style("font-weight", "bold")
+        .attr('class', 'radial-progress__text')
+        .attr('fill', colours.text)
+        .attr('text-anchor', 'middle')
+        .attr('dy', '0');
+
+    var numberText3 = track.append('text')
+        .style("font-size", "20px")
+        .style("font-weight", "bold")
+        .attr('class', 'radial-progress__text')
+        .attr('fill', colours.text)
+        .attr('text-anchor', 'middle')
+        .attr('dy', '50');
+
+
+    function update(progress) {
+        //update position of endAngle
+        value.attr('d', circle.endAngle(endAngle * progress));
+        //update text value
+        numberText.text("Level : " + level);
+        numberText2.text("% To level : " + formatText(progress));
+        numberText3.text("XP To Level : " + experienceToLevelUp);
+
+    }
+
+    function iterate() {
+        //call update to begin animation
+        update(progress);
+        if (percentage > 0) {
+            //reduce count till it reaches 0
+            percentage--;
+            //increase progress
+
+            progress += step;
+
+            if (progress > 0.995) {
+                progress = 0;
+            }
+
+            //Control the speed of the fill
+            setTimeout(iterate, 10);
+        }
+    }
+
+    iterate();
+
+</script>
 
 }

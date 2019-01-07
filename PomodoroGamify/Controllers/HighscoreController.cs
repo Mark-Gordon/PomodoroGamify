@@ -21,11 +21,10 @@ namespace PomodoroGamify.Controllers
         // GET: Highscore
         public ActionResult Index()
         {
-            string userID = User.Identity.GetUserId();
 
-            var user = _context.UserModels.SingleOrDefault(c => c.UserId == userID);
+            var users = _context.UserModels.ToList();
 
-            return View(user);
+            return View(users);
         }
 
         public ActionResult PomodoroCompleted()

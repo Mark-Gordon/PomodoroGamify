@@ -39,7 +39,19 @@ namespace PomodoroGamify.Models
 
         public int getPercentageToLevel()
         {
-            return ((Experience - ExperienceOfCurrentLevel) * 100) / (ExperienceOfNextLevel - ExperienceOfCurrentLevel);
+            if ((ExperienceOfNextLevel - ExperienceOfCurrentLevel) == 0)
+            {
+                return 0;
+            }
+            else
+            {
+                return ((Experience - ExperienceOfCurrentLevel) * 100) / (ExperienceOfNextLevel - ExperienceOfCurrentLevel);
+            }
+        }
+
+        public int getLevelFromExperience(int exp)
+        {
+            return Convert.ToInt32(Math.Max(Math.Floor(8.75 * Math.Log(exp + 100) + -40), 1));
         }
     }
 }
