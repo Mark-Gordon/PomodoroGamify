@@ -1,15 +1,19 @@
 ﻿using PomodoroGamify.Models;
 using System;
-using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using System.Diagnostics;
+
+
 
 namespace PomodoroGamify.Controllers
 {
     public class HomeController : Controller
     {
+
+
 
         private ApplicationDbContext _context;
 
@@ -54,10 +58,49 @@ namespace PomodoroGamify.Controllers
             return Json(updatedUserData, JsonRequestBehavior.AllowGet);
         }
 
-
-
-        public ActionResult PomodoroCompleted()
+        [HttpPost]
+        public ActionResult AjaxPost(string id)
         {
+            System.Diagnostics.Debug.WriteLine("\n\n\n\n\npsotWORK\n\n\n");
+            int rating = Int32.Parse(id);
+
+            string userID = User.Identity.GetUserId();
+            
+            var user = _context.UserModels.Include(c => c.Effective).Include(c => c.Pomodoro).SingleOrDefault(c => c.UserId == userID);
+
+            user.Pomodoro.NumberOfPomodoros = user.Pomodoro.NumberOfPomodoros + 1;
+            double averageRating = (((user.Effective.AverageEffectiveRating * (user.Pomodoro.NumberOfPomodoros - 1)) + rating) / user.Pomodoro.NumberOfPomodoros);
+
+            user.Effective.AverageEffectiveRating = averageRating;
+
+            _context.SaveChanges();
+
+            return Json("", JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult FailedPomodoro()
+        {
+           string userID = User.Identity.GetUserId();
+            
+            var user = _context.UserModels.Include(c => c.Pomodoro).SingleOrDefault(c => c.UserId == userID);
+                
+           
+
+
+            user.Pomodoro.NumberOfFailedPomodos = user.Pomodoro.NumberOfFailedPomodos + 1;
+
+            _context.SaveChanges();
+
+            return Json("", JsonRequestBehavior.AllowGet);
+        }
+
+
+
+        [HttpGet]
+        public ActionResult GetQuests()
+        {
+            System.Diagnostics.Debug.WriteLine("\n\n\n\n\nQUESTS!\n\n\n");
 
             string userID = User.Identity.GetUserId();
 
@@ -69,16 +112,22 @@ namespace PomodoroGamify.Controllers
 
             user.ExperienceOfCurrentLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level));
 
-            user.ExperienceOfNextLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level+1));
+            user.ExperienceOfNextLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level + 1));
 
+
+            System.Diagnostics.Debug.WriteLine(user.ApplicationUser.Email);
 
 
             _context.SaveChanges();
 
+            var updatedUserData = new { Experience = user.Experience, Level = user.Level, PercentageToLevel = user.getPercentageToLevel(), ExperienceToLevelUp = user.GetExperienceToLevelUp() };
 
 
-
-            return View("Index", user);
+            return Json(updatedUserData, JsonRequestBehavior.AllowGet);
         }
+
+
+
+
     }
 }

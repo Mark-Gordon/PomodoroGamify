@@ -176,12 +176,44 @@ namespace PomodoroGamify.Controllers
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
+                    var effective = new Effective
+                    {
+                        Id = user.Id,
+                        AverageEffectiveRating = 0
+                    };
+
+                    var pomodoro = new Pomodoro
+                    {
+                        Id = user.Id,
+                        NumberOfPomodoros = 0,
+                        NumberOfFailedPomodos = 0
+                    };
+
 
                     var userModel = new UserModel
                     {
                         UserId = user.Id,
-                        Level = 1
+                        Level = 1,
+                        Pomodoro = pomodoro,
+                        PomodoroId = user.Id,
+                        Effective = effective,
+                        EffectiveID = user.Id
                     };
+
+                    int questCount = _context.Quests.Count();
+
+                    for(int i=0; i < questCount; i++)
+                    {
+                        var userQuestProgress = new UserQuestProgress
+                        {
+                            Id = user.Id,
+                            QuestId = i + "",
+                            ProgressPomodoros = 0
+                        };
+
+                        _context.UserQuestProgress.Add(userQuestProgress);
+                    }
+
 
                     _context.UserModels.Add(userModel);
                     _context.SaveChanges();

@@ -12,6 +12,7 @@ namespace PomodoroGamify.Models
     {
         public virtual UserModel UserModel { get; set; }
 
+
         [Required]
         [StringLength(255)]
         public string Username;
@@ -29,6 +30,8 @@ namespace PomodoroGamify.Models
     {
 
         public DbSet<UserModel> UserModels { get; set; }
+        public DbSet<Quest> Quests { get; set; }
+        public DbSet<UserQuestProgress> UserQuestProgress { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

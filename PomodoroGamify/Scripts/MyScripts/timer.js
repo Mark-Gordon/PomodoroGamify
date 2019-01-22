@@ -2,16 +2,52 @@
     bootbox.confirm("Are you sure you wish to stop the timer?", function (result) {
 
         if (result) {
+            document.getElementById("alertBox").style = "display: none;"
             clearInterval(timer);
             jQuery("#timerStartBtn").prop("disabled", false);
             jQuery("#timerStopBtn").prop("disabled", true)
             $("#time").text("25:00");
+            failedPomodoroPost();
         }
 
     });
 }
 
+function failedPomodoroPost() {
+
+    $.ajax({
+        url: "/Home/FailedPomodoro",
+        method: "POST",
+        data: {},
+        success: function (data) { }
+    });
+
+}
+
 function startTimer(duration, display) {
+
+
+
+    if (selectedQuestId != "") {
+
+
+        var ul = document.getElementById(selectedQuestId);
+
+        var items = ul.getElementsByTagName("span");
+
+        if (items[0].id > level) {
+            bootbox.alert("You do not have the required level (" + items[0].id + ") to start " + selectedQuestId);
+            return;
+        }
+            
+
+        document.getElementById("alertBox").removeAttribute("style");
+        document.getElementById("alertBox").innerHTML = "<strong>You are working on " + selectedQuestId + "<strong>";
+    }
+
+
+
+
     jQuery("#timerStartBtn").prop("disabled", true);
     jQuery("#timerStopBtn").prop("disabled", false)
 

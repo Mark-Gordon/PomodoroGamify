@@ -227,16 +227,68 @@
     <Compile Include="Migrations\201808092302518_AddCurrentExperience.Designer.cs">
       <DependentUpon>201808092302518_AddCurrentExperience.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201901141633481_AddPomodoro.cs" />
+    <Compile Include="Migrations\201901141633481_AddPomodoro.Designer.cs">
+      <DependentUpon>201901141633481_AddPomodoro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901141927233_AddEffective.cs" />
+    <Compile Include="Migrations\201901141927233_AddEffective.Designer.cs">
+      <DependentUpon>201901141927233_AddEffective.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901141935018_updateAverageEffectivenessToDouble.cs" />
+    <Compile Include="Migrations\201901141935018_updateAverageEffectivenessToDouble.Designer.cs">
+      <DependentUpon>201901141935018_updateAverageEffectivenessToDouble.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901151642150_addFailedPomodoros.cs" />
+    <Compile Include="Migrations\201901151642150_addFailedPomodoros.Designer.cs">
+      <DependentUpon>201901151642150_addFailedPomodoros.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901180011022_AddQuests.cs" />
+    <Compile Include="Migrations\201901180011022_AddQuests.Designer.cs">
+      <DependentUpon>201901180011022_AddQuests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901181537390_AddQuests1.cs" />
+    <Compile Include="Migrations\201901181537390_AddQuests1.Designer.cs">
+      <DependentUpon>201901181537390_AddQuests1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901191254375_QuestsAddPomodoroRequirement.cs" />
+    <Compile Include="Migrations\201901191254375_QuestsAddPomodoroRequirement.Designer.cs">
+      <DependentUpon>201901191254375_QuestsAddPomodoroRequirement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901211716090_UpdatePomodoroRequirements.cs" />
+    <Compile Include="Migrations\201901211716090_UpdatePomodoroRequirements.Designer.cs">
+      <DependentUpon>201901211716090_UpdatePomodoroRequirements.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901211720415_AddRewardExperience.cs" />
+    <Compile Include="Migrations\201901211720415_AddRewardExperience.Designer.cs">
+      <DependentUpon>201901211720415_AddRewardExperience.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901211721109_SetRewardExperience.cs" />
+    <Compile Include="Migrations\201901211721109_SetRewardExperience.Designer.cs">
+      <DependentUpon>201901211721109_SetRewardExperience.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901211824212_UserQuestProgress.cs" />
+    <Compile Include="Migrations\201901211824212_UserQuestProgress.Designer.cs">
+      <DependentUpon>201901211824212_UserQuestProgress.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Effective.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Pomodoro.cs" />
+    <Compile Include="Models\Quest.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Models\UserNameModel.cs" />
+    <Compile Include="Models\UserQuestProgress.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\aspnet-PomodoroGamify-20180731042403.mdf" />
+    <Content Include="App_Data\aspnet-PomodoroGamify-20180731042403_log.ldf">
+      <DependentUpon>aspnet-PomodoroGamify-20180731042403.mdf</DependentUpon>
+    </Content>
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -505,6 +557,9 @@
     <Content Include="Content\DataTables\css\semanticui.scss" />
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
+    <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\PomodoroGamifyTest - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.0.0-vsdoc.js" />
     <Content Include="Scripts\jquery-3.0.0.js" />
     <Content Include="Scripts\jquery-3.0.0.min.js" />
@@ -530,7 +585,9 @@
     <Content Include="Scripts\umd\popper-utils.min.js" />
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -575,7 +632,6 @@
     <Content Include="Views\Highscore\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Views\UserName\" />
     <Folder Include="Views\User\" />
   </ItemGroup>
@@ -609,6 +665,39 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808092302518_AddCurrentExperience.resx">
       <DependentUpon>201808092302518_AddCurrentExperience.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901141633481_AddPomodoro.resx">
+      <DependentUpon>201901141633481_AddPomodoro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901141927233_AddEffective.resx">
+      <DependentUpon>201901141927233_AddEffective.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901141935018_updateAverageEffectivenessToDouble.resx">
+      <DependentUpon>201901141935018_updateAverageEffectivenessToDouble.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901151642150_addFailedPomodoros.resx">
+      <DependentUpon>201901151642150_addFailedPomodoros.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901180011022_AddQuests.resx">
+      <DependentUpon>201901180011022_AddQuests.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901181537390_AddQuests1.resx">
+      <DependentUpon>201901181537390_AddQuests1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901191254375_QuestsAddPomodoroRequirement.resx">
+      <DependentUpon>201901191254375_QuestsAddPomodoroRequirement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901211716090_UpdatePomodoroRequirements.resx">
+      <DependentUpon>201901211716090_UpdatePomodoroRequirements.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901211720415_AddRewardExperience.resx">
+      <DependentUpon>201901211720415_AddRewardExperience.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901211721109_SetRewardExperience.resx">
+      <DependentUpon>201901211721109_SetRewardExperience.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901211824212_UserQuestProgress.resx">
+      <DependentUpon>201901211824212_UserQuestProgress.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

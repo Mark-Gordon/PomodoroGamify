@@ -6430,6 +6430,7 @@ a.thumbnail.active {
 .list-group {
     margin-bottom: 20px;
     padding-left: 0;
+    border: 1px solid black;
 }
 
 .list-group-item {
@@ -8429,3 +8430,5 @@ button.close {
 .panel-primary .panel-title {
     color: #fff;
 }
+
+

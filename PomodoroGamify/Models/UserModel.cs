@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
+
 
 namespace PomodoroGamify.Models
 {
@@ -21,7 +19,21 @@ namespace PomodoroGamify.Models
 
         public int ExperienceOfCurrentLevel { get; set; }
 
+        public Pomodoro Pomodoro { get; set; }
+        public string PomodoroId { get; set; }
+
+        public Effective Effective { get; set; }
+        public string EffectiveID { get; set; }
+
+
+
         public virtual ApplicationUser ApplicationUser
+        {
+            get; set;
+
+        }
+
+        public virtual UserQuestProgress UserQuestProgress
         {
             get; set;
 
