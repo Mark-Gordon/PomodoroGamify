@@ -182,6 +182,12 @@ namespace PomodoroGamify.Controllers
                         AverageEffectiveRating = 0
                     };
 
+                    var enjoyment = new Enjoyment
+                    {
+                        Id = user.Id,
+                        AverageEnjoymentRating = 0
+                    };
+
                     var pomodoro = new Pomodoro
                     {
                         Id = user.Id,
@@ -192,33 +198,39 @@ namespace PomodoroGamify.Controllers
 
                     var userModel = new UserModel
                     {
-                        UserId = user.Id,
+                        Id = user.Id,
                         Level = 1,
                         Pomodoro = pomodoro,
                         PomodoroId = user.Id,
                         Effective = effective,
-                        EffectiveID = user.Id
+                        EffectiveID = user.Id,
+                        Enjoyment = enjoyment,
+                        EnjoymentID = user.Id
                     };
 
-                    int questCount = _context.Quests.Count();
-
-                    for(int i=0; i < questCount; i++)
-                    {
-                        var userQuestProgress = new UserQuestProgress
-                        {
-                            Id = user.Id,
-                            QuestId = i + "",
-                            ProgressPomodoros = 0
-                        };
-
-                        _context.UserQuestProgress.Add(userQuestProgress);
-                    }
 
 
                     _context.UserModels.Add(userModel);
                     _context.SaveChanges();
 
-                    
+                    int questCount = _context.Quests.Count();
+
+                    for (int i = 0; i < questCount; i++)
+                    {
+                        var userQuestProgress = new UserQuestProgress
+                        {
+                            Id = user.Id + "-" + i,
+                            QuestId = i + "",
+                            ProgressPomodoros = 0,
+                            UserModelId = user.Id
+                        };
+
+                        _context.UserQuestProgress.Add(userQuestProgress);
+                    }
+
+                    _context.SaveChanges();
+
+
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);

@@ -2,14 +2,12 @@
 @model PomodoroGamify.Models.UserModel
 @Scripts.Render("~/Scripts/MyScripts/timer.js")
 @{
-ViewBag.Title = "Home Page";
+    ViewBag.Title = "Home Page";
 }
 <div id="emptyPadding"></div>
 @{ }
 <div class="container">
-
     <div class="row">
-
         <div id="alertBox" style="display: none;" class="alert alert-success alert-dismissible fade in">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
             <text id="text1"><strong>Success!</strong> This alert box could indicate a successful or positive action.</text>
@@ -19,7 +17,7 @@ ViewBag.Title = "Home Page";
                 <text id="time">25:00</text>
             </div>
             <div id="TimeControllerDiv">
-                <button id="timerStartBtn" class="btn btn-primary" onclick="startTimer(60 * .2, $('#time'));">Start Timer</button>
+                <button id="timerStartBtn" class="btn btn-primary" onclick="startTimer(60 * 0.04, $('#time'));">Start Timer</button>
                 <button id="timerStopBtn" class="btn btn-primary" disabled="disabled" onclick="stopTimer();">Stop Timer</button>
             </div>
         </div>
@@ -30,57 +28,101 @@ ViewBag.Title = "Home Page";
             </div>
         </div>
     </div>
-        <div class="row">
-            <div class="col-lg-6">
-                <h2>Quests</h2>
-                <ul id="quests" class="list-group">
-                    <li id="quest1" onclick="listSelected($('#quest1'));" class="list-group-item d-flex justify-content-between align-items-center">
-                        Defeat the dragon that is terrorising the village!
-                        <span id=5>l2% Completed</span>
-                    </li>
-                    <li id="quest2" onclick="listSelected($('#quest2'));" value=5 class="list-group-item d-flex justify-content-between align-items-center">
-                        There has been a mystery attack on the castle...
-                        <span id=15>0% Completed</span>
-                    </li>
-                    <li id="quest3" onclick="listSelected($('#quest3'));" value=3 class="list-group-item d-flex justify-content-between align-items-center">
-                        Morbi leo risus
-                        <span id=100>1</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
+     <div class="row">
+         <div class="col-lg-6">
+               <h2>Quests</h2>
+               <ul id="quests" class="list-group">
+                   <!--<li id="quest3" onclick="listSelected($('#quest3'));" value=3 class="list-group-item d-flex justify-content-between align-items-center">
+    Morbi leo risus
+    <span id=100>1</span>
+                   </li>-->
+               </ul>
+         </div>
     </div>
-    @section scripts
+</div>
+@section scripts
 {
-        <script>
+    <script>
    var level = @Model.Level;
    var totalExperience = @Model.Experience;
    var percentage = @Model.getPercentageToLevel();
    var experienceToLevelUp = @Model.GetExperienceToLevelUp();
    var currentPercentage = percentage;
+   var questID = [];
 
    var timer;
 
-   checkQuestsUnlocked();
+
+        getQuests();
+
+        var quests;
+   function getQuests() {
+
+
+
+        $.ajax({
+            url: "/Home/GetQuests",
+            method: "GET",
+            success: function (data) {
+                quests = data;
+                loadQuests();
+            }
+       });
+
+
+       return true;
+
+   }
+   var idValues = []
+
+    function loadQuests() {
+
+        for (var i = 0; i < quests.length; i++) {
+            var ul = document.getElementById("quests");
+            var li = document.createElement("li");
+            li.append(document.createTextNode(quests[i][2]));
+            li.id = quests[i][1];
+            var val = quests[i][1];
+            idValues.push("#" + val);
+
+            li.onclick = (function (i) {
+                return function () { listSelected($("#Quest" + (i+1))) };
+        }) (i);
+            li.value = quests[i][6];
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            var span = document.createElement("span");
+            span.innerText = "hello";
+            span.id = parseInt(quests[i][3]);
+            span.value = quests[i][4];
+            li.appendChild(span);
+            ul.appendChild(li);
+        }
+
+        checkQuestsUnlocked();
+
+        }
 
 
 
    function checkQuestsUnlocked() {
 
 
+
+
        var ul = document.getElementById("quests");
-       var items = ul.getElementsByTagName("span");
+                var items = ul.getElementsByTagName("span");
+
 
 
 
        for (var i = 0; i < items.length; ++i) {
 
-   
-
 
            if (items[i].id <= level) {
                $("#" + items[i].id).removeClass("btn-danger badge");
                $("#" + items[i].id).addClass("badge badge-primary badge-pill");
+               var progress = document.getElementById(items[i].id).parentElement.value;
+               document.getElementById(items[i].id).innerHTML = progress + "/" + items[i].value + " completed";
 
            } else {
                $("#" + items[i].id).addClass("btn-danger badge");
@@ -94,7 +136,8 @@ ViewBag.Title = "Home Page";
     var selectedQuestId = "";
 
 
-   function listSelected(display) {
+        function listSelected(display) {
+
 
        selectedQuestId = display[0].id;
 
@@ -125,9 +168,27 @@ ViewBag.Title = "Home Page";
    }
 
 
+   function updateQuest(questID) {
+
+            if (questID == "")
+                return;
+
+
+            alert(questID);
+
+        $.ajax({
+             url: "/Home/UpdateQuest",
+            method: "POST",
+            data: { questName: questID },
+            success: function (data) {
+                alert("success!!");
+            }
+        }); 
+
+   }
+
+
    function pomodoroCompleted() {
-
-
 
        $.ajax({
        url: "/Home/AjaxGet",
@@ -143,13 +204,15 @@ ViewBag.Title = "Home Page";
            currentPercentage = percentage;
 
            checkQuestsUnlocked();
+           handleHappyRating();
            handleEffectiveRating();
+           updateQuest(selectedQuestId);
 
 
 
            if (percentage < oldPercentage) {
                percentage = percentage + (100 - oldPercentage);
-               alert("Congratulation on level " + level + "! You have been awarded " +  level * 50 + " coins!");
+               //alert("Congratulation on level " + level + "! You have been awarded " +  level * 50 + " coins!");
            } else {
                percentage = percentage - oldPercentage;
            }
@@ -187,7 +250,36 @@ ViewBag.Title = "Home Page";
             success: function (data) {}
         });
 
-    }
+        }
+
+        function handleHappyRating() {
+
+
+            bootbox.prompt("Please enter the enjoyment of this pomodoro from 1(Very bad) to 5(Very good).", function (result) {
+                if (isNaN(result) || result > 5 || result < 1) {
+                    handleHappyRating();
+                    return;
+                } else {
+                    postHappyRating(result);
+                }
+            });
+
+        }
+
+
+        function postHappyRating(effectiveRating) {
+
+
+
+            $.ajax({
+                url: "/Home/AjaxPostHappy",
+                method: "POST",
+                data: { id: effectiveRating },
+                success: function (data) {
+                    alert("success");}
+            });
+
+        }
 
 
 
@@ -303,5 +395,6 @@ ViewBag.Title = "Home Page";
 
    iterate();
 
-        </script>
-    }
+
+    </script>
+}

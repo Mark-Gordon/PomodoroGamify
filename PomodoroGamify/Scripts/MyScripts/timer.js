@@ -2,10 +2,10 @@
     bootbox.confirm("Are you sure you wish to stop the timer?", function (result) {
 
         if (result) {
-            document.getElementById("alertBox").style = "display: none;"
+            document.getElementById("alertBox").style = "display: none;";
             clearInterval(timer);
             jQuery("#timerStartBtn").prop("disabled", false);
-            jQuery("#timerStopBtn").prop("disabled", true)
+            jQuery("#timerStopBtn").prop("disabled", true);
             $("#time").text("25:00");
             failedPomodoroPost();
         }
@@ -28,7 +28,7 @@ function startTimer(duration, display) {
 
 
 
-    if (selectedQuestId != "") {
+    if (selectedQuestId !== "") {
 
 
         var ul = document.getElementById(selectedQuestId);
@@ -49,7 +49,7 @@ function startTimer(duration, display) {
 
 
     jQuery("#timerStartBtn").prop("disabled", true);
-    jQuery("#timerStopBtn").prop("disabled", false)
+    jQuery("#timerStopBtn").prop("disabled", false);
 
     var minutes, seconds;
     timer = setInterval(function () {
@@ -66,7 +66,7 @@ function startTimer(duration, display) {
             updateExperience();
             $("#time").text("EXPIRED!");
             jQuery("#timerStartBtn").prop("disabled", false);
-            jQuery("#timerStopBtn").prop("disabled", true)
+            jQuery("#timerStopBtn").prop("disabled", true);
             clearInterval(timer);
             pomodoroCompleted();
             return;

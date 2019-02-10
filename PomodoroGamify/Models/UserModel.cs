@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,7 +10,7 @@ namespace PomodoroGamify.Models
     {
 
         [Key, ForeignKey("ApplicationUser")]
-        public string UserId { get; set; }
+        public string Id { get; set; }
 
         public int Experience { get; set; }
 
@@ -25,6 +26,11 @@ namespace PomodoroGamify.Models
         public Effective Effective { get; set; }
         public string EffectiveID { get; set; }
 
+        public Enjoyment Enjoyment { get; set; }
+        public string EnjoymentID { get; set; }
+
+        public IList<UserQuestProgress> userQuestProgresses { get; set; }
+
 
 
         public virtual ApplicationUser ApplicationUser
@@ -33,11 +39,6 @@ namespace PomodoroGamify.Models
 
         }
 
-        public virtual UserQuestProgress UserQuestProgress
-        {
-            get; set;
-
-        }
 
         public double GetExperienceToLevelUp()
         {

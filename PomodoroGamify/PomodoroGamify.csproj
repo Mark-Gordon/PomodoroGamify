@@ -48,6 +48,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.8.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
@@ -105,6 +111,9 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="ThenInclude.EF6, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ThenInclude.EF6.1.0.0.8\lib\net452\ThenInclude.EF6.dll</HintPath>
+    </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
@@ -117,12 +126,6 @@
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
@@ -271,9 +274,74 @@
     <Compile Include="Migrations\201901211824212_UserQuestProgress.Designer.cs">
       <DependentUpon>201901211824212_UserQuestProgress.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201901241543480_FixQuests1.0.cs" />
+    <Compile Include="Migrations\201901241543480_FixQuests1.0.Designer.cs">
+      <DependentUpon>201901241543480_FixQuests1.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901241559080_FixQuests2.0.cs" />
+    <Compile Include="Migrations\201901241559080_FixQuests2.0.Designer.cs">
+      <DependentUpon>201901241559080_FixQuests2.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901241600220_FixQuests3.0.cs" />
+    <Compile Include="Migrations\201901241600220_FixQuests3.0.Designer.cs">
+      <DependentUpon>201901241600220_FixQuests3.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901241604488_FixQuests4.0.cs" />
+    <Compile Include="Migrations\201901241604488_FixQuests4.0.Designer.cs">
+      <DependentUpon>201901241604488_FixQuests4.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901241658423_FixQuests5.0.cs" />
+    <Compile Include="Migrations\201901241658423_FixQuests5.0.Designer.cs">
+      <DependentUpon>201901241658423_FixQuests5.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901241708461_FixQuests7.0.cs" />
+    <Compile Include="Migrations\201901241708461_FixQuests7.0.Designer.cs">
+      <DependentUpon>201901241708461_FixQuests7.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901241711226_FixQuests8.0.cs" />
+    <Compile Include="Migrations\201901241711226_FixQuests8.0.Designer.cs">
+      <DependentUpon>201901241711226_FixQuests8.0.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901241715428_asd.cs" />
+    <Compile Include="Migrations\201901241715428_asd.Designer.cs">
+      <DependentUpon>201901241715428_asd.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901241724075_check.cs" />
+    <Compile Include="Migrations\201901241724075_check.Designer.cs">
+      <DependentUpon>201901241724075_check.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901241725289_check2.cs" />
+    <Compile Include="Migrations\201901241725289_check2.Designer.cs">
+      <DependentUpon>201901241725289_check2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901241729479_check4.cs" />
+    <Compile Include="Migrations\201901241729479_check4.Designer.cs">
+      <DependentUpon>201901241729479_check4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901241730453_check5.cs" />
+    <Compile Include="Migrations\201901241730453_check5.Designer.cs">
+      <DependentUpon>201901241730453_check5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901241748053_QuestStringToInt.cs" />
+    <Compile Include="Migrations\201901241748053_QuestStringToInt.Designer.cs">
+      <DependentUpon>201901241748053_QuestStringToInt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901241753447_sf.cs" />
+    <Compile Include="Migrations\201901241753447_sf.Designer.cs">
+      <DependentUpon>201901241753447_sf.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901251657098_AddQuestToQuestProgress.cs" />
+    <Compile Include="Migrations\201901251657098_AddQuestToQuestProgress.Designer.cs">
+      <DependentUpon>201901251657098_AddQuestToQuestProgress.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902041650399_AddEnjoymentRating.cs" />
+    <Compile Include="Migrations\201902041650399_AddEnjoymentRating.Designer.cs">
+      <DependentUpon>201902041650399_AddEnjoymentRating.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Effective.cs" />
+    <Compile Include="Models\Enjoyment.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Pomodoro.cs" />
@@ -558,6 +626,7 @@
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
     <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\CustomProfile1.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\PomodoroGamifyTest - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.0.0-vsdoc.js" />
@@ -698,6 +767,54 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201901211824212_UserQuestProgress.resx">
       <DependentUpon>201901211824212_UserQuestProgress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241543480_FixQuests1.0.resx">
+      <DependentUpon>201901241543480_FixQuests1.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241559080_FixQuests2.0.resx">
+      <DependentUpon>201901241559080_FixQuests2.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241600220_FixQuests3.0.resx">
+      <DependentUpon>201901241600220_FixQuests3.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241604488_FixQuests4.0.resx">
+      <DependentUpon>201901241604488_FixQuests4.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241658423_FixQuests5.0.resx">
+      <DependentUpon>201901241658423_FixQuests5.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241708461_FixQuests7.0.resx">
+      <DependentUpon>201901241708461_FixQuests7.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241711226_FixQuests8.0.resx">
+      <DependentUpon>201901241711226_FixQuests8.0.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241715428_asd.resx">
+      <DependentUpon>201901241715428_asd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241724075_check.resx">
+      <DependentUpon>201901241724075_check.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241725289_check2.resx">
+      <DependentUpon>201901241725289_check2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241729479_check4.resx">
+      <DependentUpon>201901241729479_check4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241730453_check5.resx">
+      <DependentUpon>201901241730453_check5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241748053_QuestStringToInt.resx">
+      <DependentUpon>201901241748053_QuestStringToInt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901241753447_sf.resx">
+      <DependentUpon>201901241753447_sf.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901251657098_AddQuestToQuestProgress.resx">
+      <DependentUpon>201901251657098_AddQuestToQuestProgress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902041650399_AddEnjoymentRating.resx">
+      <DependentUpon>201902041650399_AddEnjoymentRating.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

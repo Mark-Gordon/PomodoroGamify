@@ -32,7 +32,7 @@ namespace PomodoroGamify.Controllers
 
             string userID = User.Identity.GetUserId();
 
-            var user = _context.UserModels.SingleOrDefault(c => c.UserId == userID);
+            var user = _context.UserModels.SingleOrDefault(c => c.Id == userID);
 
             user.Experience += 25;
 
