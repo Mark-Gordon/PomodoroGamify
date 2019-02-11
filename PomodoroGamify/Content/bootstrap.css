@@ -6038,6 +6038,10 @@ a.label:focus {
     border-radius: 10px;
 }
 
+.badge-success {
+    background-color: #0ca25b;
+}
+
     .badge:empty {
         display: none;
     }

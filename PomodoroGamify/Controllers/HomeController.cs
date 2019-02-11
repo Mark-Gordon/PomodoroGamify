@@ -52,6 +52,7 @@ namespace PomodoroGamify.Controllers
 
 
 
+
             _context.SaveChanges();
 
             var updatedUserData = new { Experience = user.Experience, Level = user.Level, PercentageToLevel = user.getPercentageToLevel(), ExperienceToLevelUp = user.GetExperienceToLevelUp() };
@@ -68,7 +69,8 @@ namespace PomodoroGamify.Controllers
             string userID = User.Identity.GetUserId();
             System.Diagnostics.Debug.WriteLine("\n\n\n\n\npsotWORK\n\n\n");
             System.Diagnostics.Debug.WriteLine(questName);
-            var questID = _context.Quests.SingleOrDefault(c => c.QuestName == questName).Id;
+            var quest = _context.Quests.SingleOrDefault(c => c.QuestName == questName);
+            var questID = quest.Id;
             System.Diagnostics.Debug.WriteLine(questID);
             System.Diagnostics.Debug.WriteLine(userID);
             var questProgress = _context.UserQuestProgress.SingleOrDefault(c => c.Id == (userID + "-" + questID));
@@ -76,7 +78,9 @@ namespace PomodoroGamify.Controllers
 
             _context.SaveChanges();
 
-            return Json("", JsonRequestBehavior.AllowGet);
+            var updatedQuestProgress = new { ProgressPomodoros = questProgress.ProgressPomodoros, PomodorosToComplete =  quest.NumberOfPomodorosToComplete};
+
+            return Json(updatedQuestProgress, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -97,6 +101,35 @@ namespace PomodoroGamify.Controllers
             _context.SaveChanges();
 
             return Json("", JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult RewardQuest(string questName)
+        {
+            string userID = User.Identity.GetUserId();
+            var user = _context.UserModels.SingleOrDefault(c => c.Id == userID);
+            System.Diagnostics.Debug.WriteLine("\n\n\n\n\nReward Quest\n\n\n");
+            System.Diagnostics.Debug.WriteLine(questName);
+            var quest = _context.Quests.SingleOrDefault(c => c.QuestName == questName);
+            var rewardExerpience = quest.RewardExperience;
+            System.Diagnostics.Debug.WriteLine(rewardExerpience);
+            System.Diagnostics.Debug.WriteLine(userID);
+
+            user.Experience += rewardExerpience;
+
+            user.Level = Convert.ToInt32(Math.Max(Math.Floor(8.75 * Math.Log(user.Experience + 100) + -40), 1));
+
+            user.ExperienceOfCurrentLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level));
+
+            user.ExperienceOfNextLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level + 1));
+
+
+
+            _context.SaveChanges();
+
+            var updatedUserData = new { Experience = user.Experience, Level = user.Level, PercentageToLevel = user.getPercentageToLevel(), ExperienceToLevelUp = user.GetExperienceToLevelUp(), QuestReward = quest.RewardExperience };
+
+            return Json(updatedUserData, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

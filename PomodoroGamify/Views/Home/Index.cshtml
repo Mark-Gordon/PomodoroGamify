@@ -55,9 +55,8 @@
 
         getQuests();
 
-        var quests;
+   var quests;
    function getQuests() {
-
 
 
         $.ajax({
@@ -91,7 +90,6 @@
             li.value = quests[i][6];
             li.className = "list-group-item d-flex justify-content-between align-items-center";
             var span = document.createElement("span");
-            span.innerText = "hello";
             span.id = parseInt(quests[i][3]);
             span.value = quests[i][4];
             li.appendChild(span);
@@ -122,7 +120,13 @@
                $("#" + items[i].id).removeClass("btn-danger badge");
                $("#" + items[i].id).addClass("badge badge-primary badge-pill");
                var progress = document.getElementById(items[i].id).parentElement.value;
-               document.getElementById(items[i].id).innerHTML = progress + "/" + items[i].value + " completed";
+               if (progress == items[i].value) {
+                   document.getElementById(items[i].id).innerHTML = "COMPLETED!";
+                   document.getElementById(items[i].id).className = "badge badge-success";
+                   document.getElementById(items[i].id).parentElement.onclick = "";
+               } else {
+                   document.getElementById(items[i].id).innerHTML = progress + "/" + items[i].value + " completed";
+               }
 
            } else {
                $("#" + items[i].id).addClass("btn-danger badge");
@@ -138,8 +142,9 @@
 
         function listSelected(display) {
 
+            selectedQuestId = display[0].id;
 
-       selectedQuestId = display[0].id;
+            
 
 
        if (display.hasClass("active")) {
@@ -149,7 +154,9 @@
        }
 
        var ul = document.getElementById("quests");
-       var items = ul.getElementsByTagName("li");
+        var items = ul.getElementsByTagName("li");
+
+        
 
        for (var i = 0; i < items.length; ++i) {
 
@@ -170,22 +177,69 @@
 
    function updateQuest(questID) {
 
-            if (questID == "")
-                return;
+       if (questID == "")
+           return;
 
-
-            alert(questID);
 
         $.ajax({
              url: "/Home/UpdateQuest",
             method: "POST",
             data: { questName: questID },
             success: function (data) {
-                alert("success!!");
+                visuallyUpdateQuest(questID,data);
             }
         }); 
 
-   }
+        }
+
+        function rewardQuest(questID) {
+
+            $.ajax({
+                url: "/Home/RewardQuest",
+                method: "POST",
+                data: { questName: questID },
+                success: function (data) {
+                    level = data.Level;
+                    totalExperience = data.Experience;
+                    percentage = data.PercentageToLevel;
+                    experienceToLevelUp = data.ExperienceToLevelUp
+                    currentPercentage = percentage;
+                    checkQuestsUnlocked();
+                    iterate();
+                    bootbox.alert("Congratulations! For completing the quest you have gained a bonus " + data.QuestReward + " experience!");
+
+                    
+                }
+            }); 
+            
+
+        }
+
+
+        function questCompleted(quest, span) {
+            quest.onclick = "";
+            $(quest).removeClass("active");
+            span[0].innerHTML = "COMPLETED!";
+            span[0].className = "badge badge-success";
+            rewardQuest(quest.id);
+        }
+
+
+        function visuallyUpdateQuest(questID, data) {
+
+            var quest = document.getElementById(questID);
+            quest.value = quest.value + 1;
+            var span = quest.getElementsByTagName("span");
+            if (data.ProgressPomodoros == data.PomodorosToComplete)
+                questCompleted(quest, span);
+
+            else
+                span[0].innerHTML = data.ProgressPomodoros + "/" + data.PomodorosToComplete + " completed";
+
+
+
+
+        }
 
 
    function pomodoroCompleted() {
@@ -275,8 +329,7 @@
                 url: "/Home/AjaxPostHappy",
                 method: "POST",
                 data: { id: effectiveRating },
-                success: function (data) {
-                    alert("success");}
+                success: function (data) {}
             });
 
         }
