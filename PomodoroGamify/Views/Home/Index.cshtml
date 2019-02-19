@@ -188,30 +188,40 @@
             success: function (data) {
                 visuallyUpdateQuest(questID,data);
             }
-        }); 
+       }); 
 
         }
 
-        function rewardQuest(questID) {
+        async function rewardQuest(questID) {
 
             $.ajax({
                 url: "/Home/RewardQuest",
+                async: false,
                 method: "POST",
                 data: { questName: questID },
                 success: function (data) {
+                    var oldPercentage = currentPercentage;
                     level = data.Level;
                     totalExperience = data.Experience;
                     percentage = data.PercentageToLevel;
                     experienceToLevelUp = data.ExperienceToLevelUp
                     currentPercentage = percentage;
-                    checkQuestsUnlocked();
-                    iterate();
+                    //checkQuestsUnlocked();
                     bootbox.alert("Congratulations! For completing the quest you have gained a bonus " + data.QuestReward + " experience!");
+                    if (percentage < oldPercentage) {
+                        percentage = percentage + (100 - oldPercentage);
+                        //alert("Congratulation on level " + level + "! You have been awarded " +  level * 50 + " coins!");
+                    } else {
+                        percentage = percentage - oldPercentage;
+                    }
 
+
+                    
                     
                 }
             }); 
-            
+
+            await iterate();
 
         }
 
@@ -241,14 +251,28 @@
 
         }
 
+        async function hello() {
+            updateQuest(selectedQuestId);
 
-   function pomodoroCompleted() {
+        }
 
-       $.ajax({
-       url: "/Home/AjaxGet",
+
+        async function pomodoroCompleted() {
+
+      
+
+      $.ajax({
+           url: "/Home/AjaxGet",
+           async: false,
        method: "GET",
-       success: function (data) {
+           success: function (data) {
+
+
+
+               
+
            var oldPercentage = currentPercentage;
+
 
 
            level = data.Level;
@@ -260,9 +284,7 @@
            checkQuestsUnlocked();
            handleHappyRating();
            handleEffectiveRating();
-           updateQuest(selectedQuestId);
-
-
+           
 
            if (percentage < oldPercentage) {
                percentage = percentage + (100 - oldPercentage);
@@ -270,11 +292,14 @@
            } else {
                percentage = percentage - oldPercentage;
            }
-
-           iterate();
+                iterate();
 
        }
-       });
+            });
+
+
+            
+            await hello();
 
     }
 
@@ -417,7 +442,7 @@
        .attr('dy', '50');
 
 
-   function update(progress) {
+   async function update(progress) {
        //update position of endAngle
        value.attr('d', circle.endAngle(endAngle * progress));
        //update text value
@@ -427,9 +452,9 @@
 
    }
 
-   function iterate() {
+   async function iterate() {
        //call update to begin animation
-       update(progress);
+       await update(progress);
        if (percentage > 0) {
            //reduce count till it reaches 0
            percentage--;
@@ -440,9 +465,8 @@
            if (progress > 0.995) {
                progress = 0;
            }
-
            //Control the speed of the fill
-           setTimeout(iterate, 10);
+           await setTimeout(await iterate, 10);
        }
    }
 

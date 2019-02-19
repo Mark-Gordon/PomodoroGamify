@@ -100,6 +100,7 @@ namespace PomodoroGamify.Controllers
 
             _context.SaveChanges();
 
+
             return Json("", JsonRequestBehavior.AllowGet);
         }
 
