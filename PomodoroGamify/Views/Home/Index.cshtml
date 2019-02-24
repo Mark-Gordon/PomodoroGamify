@@ -28,36 +28,36 @@
             </div>
         </div>
     </div>
-     <div class="row">
-         <div class="col-lg-6">
-               <h2>Quests</h2>
-               <ul id="quests" class="list-group">
-                   <!--<li id="quest3" onclick="listSelected($('#quest3'));" value=3 class="list-group-item d-flex justify-content-between align-items-center">
-    Morbi leo risus
-    <span id=100>1</span>
-                   </li>-->
-               </ul>
-         </div>
+    <div class="row">
+        <h2>&nbsp;&nbsp;Quests</h2>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Quests providing bonus experience at the cost of delaying the pomodoro<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;experience gains until the quest is complete!
+        </p>
+        <div class="col-lg-6" style="overflow:auto; height:400px;">
+
+            <ul id="quests" class="list-group">
+            </ul>
+        </div>
     </div>
 </div>
 @section scripts
 {
-    <script>
-   var level = @Model.Level;
-   var totalExperience = @Model.Experience;
-   var percentage = @Model.getPercentageToLevel();
-   var experienceToLevelUp = @Model.GetExperienceToLevelUp();
-   var currentPercentage = percentage;
-   var questID = [];
+<script>
+    var level = @Model.Level;
+    var totalExperience = @Model.Experience;
+    var percentage = @Model.getPercentageToLevel();
+    var experienceToLevelUp = @Model.GetExperienceToLevelUp();
+    var currentPercentage = percentage;
+    var selectedQuestId = "";
+    var timer;
 
-   var timer;
 
+    getQuests();
 
-        getQuests();
-
-   var quests;
-   function getQuests() {
-
+    var quests;
+    //fetches the quests from the server on page load-up
+    function getQuests() {
 
         $.ajax({
             url: "/Home/GetQuests",
@@ -66,412 +66,320 @@
                 quests = data;
                 loadQuests();
             }
-       });
+        });
+        return true;
+    }
 
-
-       return true;
-
-   }
-   var idValues = []
-
+    //
     function loadQuests() {
 
         for (var i = 0; i < quests.length; i++) {
             var ul = document.getElementById("quests");
             var li = document.createElement("li");
-            li.append(document.createTextNode(quests[i][2]));
+            //li.append(document.createTextNode(quests[i][2]));
+            var baseExperience = (quests[i][4] * 25);
+            var bonusExperience = quests[i][5] - baseExperience;
+            li.innerHTML = "<b>" + quests[i][2] + "</b></br> Reward: " + baseExperience + " + " + bonusExperience + " bonus experience!";
+           // li.append.innerHTML = "<img src='../Images/108153.png' alt='Sample Image' width='30px' />";
+            //holds the level required to begin the quest
             li.id = quests[i][1];
-            var val = quests[i][1];
-            idValues.push("#" + val);
-
+            //holds the number of pomodoros to complete the quest
+            li.value = quests[i][6];
+            //sets on click to select and highlight the quest
             li.onclick = (function (i) {
                 return function () { listSelected($("#Quest" + (i+1))) };
-        }) (i);
-            li.value = quests[i][6];
+            })(i);
             li.className = "list-group-item d-flex justify-content-between align-items-center";
+            //Create span which holds and displays number of pomodoros to complete quest, and progress towards completion
             var span = document.createElement("span");
             span.id = parseInt(quests[i][3]);
             span.value = quests[i][4];
             li.appendChild(span);
             ul.appendChild(li);
         }
-
         checkQuestsUnlocked();
-
-        }
-
-
-
-   function checkQuestsUnlocked() {
-
-
-
-
-       var ul = document.getElementById("quests");
-                var items = ul.getElementsByTagName("span");
-
-
-
-
-       for (var i = 0; i < items.length; ++i) {
-
-
-           if (items[i].id <= level) {
-               $("#" + items[i].id).removeClass("btn-danger badge");
-               $("#" + items[i].id).addClass("badge badge-primary badge-pill");
-               var progress = document.getElementById(items[i].id).parentElement.value;
-               if (progress == items[i].value) {
-                   document.getElementById(items[i].id).innerHTML = "COMPLETED!";
-                   document.getElementById(items[i].id).className = "badge badge-success";
-                   document.getElementById(items[i].id).parentElement.onclick = "";
-               } else {
-                   document.getElementById(items[i].id).innerHTML = progress + "/" + items[i].value + " completed";
-               }
-
-           } else {
-               $("#" + items[i].id).addClass("btn-danger badge");
-               document.getElementById(items[i].id).innerHTML = "Locked unti level " + items[i].id;
-           }
-       }
-
     }
 
+    //Checks quests status and acts appropriately (Completed, unlocked, locked)
+    function checkQuestsUnlocked() {
 
-    var selectedQuestId = "";
+        var ul = document.getElementById("quests");
+        var items = ul.getElementsByTagName("span");
 
+        for (var i = 0; i < items.length; ++i) {
+            if (items[i].id <= level) {
+                $("#" + items[i].id).removeClass("btn-danger badge");
+                $("#" + items[i].id).addClass("badge badge-primary badge-pill");
+                var progress = document.getElementById(items[i].id).parentElement.value;
+                if (progress == items[i].value) {
+                    document.getElementById(items[i].id).innerHTML = "COMPLETED!";
+                    document.getElementById(items[i].id).className = "badge badge-success";
+                    document.getElementById(items[i].id).parentElement.onclick = "";
+                } else {
+                    document.getElementById(items[i].id).innerHTML = progress + "/" + items[i].value + " completed";
+                }
+            } else {
+                    $("#" + items[i].id).addClass("btn-danger badge");
+                    document.getElementById(items[i].id).innerHTML = "Locked unti level " + items[i].id;
+            }
+        }
+    }
 
-        function listSelected(display) {
+    //selects quests
+    function listSelected(display) {
 
-            selectedQuestId = display[0].id;
+        selectedQuestId = display[0].id;
+     
+        if (display.hasClass("active")) {
+            display.removeClass("active");
+            selectedQuestId = "";
+            return;
+        }
 
-            
-
-
-       if (display.hasClass("active")) {
-           display.removeClass("active");
-           selectedQuestId = "";
-           return;
-       }
-
-       var ul = document.getElementById("quests");
+        var ul = document.getElementById("quests");
         var items = ul.getElementsByTagName("li");
 
-        
+        for (var i = 0; i < items.length; ++i) {
+            $("#" + items[i].id).removeClass("active");
+        }
+        display.addClass("active");
+    }
 
-       for (var i = 0; i < items.length; ++i) {
+    //Retrives the updated quest data
+    function getUpdatedQuestData(questID) {
 
-           $("#" + items[i].id).removeClass("active");
-       }
-       display.addClass("active");
-   }
-
-
-
-   function updateExperience() {
-
-       @{
-          Model.Experience = Model.Experience + 25;
-       }
-   }
-
-
-   function updateQuest(questID) {
-
-       if (questID == "")
-           return;
-
+        if (questID == "")
+            return;
 
         $.ajax({
-             url: "/Home/UpdateQuest",
+            url: "/Home/GetUpdateQuestData",
             method: "POST",
             data: { questName: questID },
             success: function (data) {
                 visuallyUpdateQuest(questID,data);
             }
-       }); 
+        }); 
+    }
 
-        }
+    function visuallyUpdateQuest(questID, data) {
 
-        async function rewardQuest(questID) {
+        var quest = document.getElementById(questID);
+        quest.value = quest.value + 1;
+        var span = quest.getElementsByTagName("span");
+        if (data.ProgressPomodoros == data.PomodorosToComplete)
+            questCompleted(quest, span);
+        else
+            span[0].innerHTML = data.ProgressPomodoros + "/" + data.PomodorosToComplete + " completed";
+    }
 
-            $.ajax({
-                url: "/Home/RewardQuest",
-                async: false,
-                method: "POST",
-                data: { questName: questID },
-                success: function (data) {
-                    var oldPercentage = currentPercentage;
-                    level = data.Level;
-                    totalExperience = data.Experience;
-                    percentage = data.PercentageToLevel;
-                    experienceToLevelUp = data.ExperienceToLevelUp
-                    currentPercentage = percentage;
-                    //checkQuestsUnlocked();
-                    bootbox.alert("Congratulations! For completing the quest you have gained a bonus " + data.QuestReward + " experience!");
-                    if (percentage < oldPercentage) {
-                        percentage = percentage + (100 - oldPercentage);
-                        //alert("Congratulation on level " + level + "! You have been awarded " +  level * 50 + " coins!");
-                    } else {
-                        percentage = percentage - oldPercentage;
-                    }
-
-
-                    
-                    
-                }
-            }); 
-
-            await iterate();
-
-        }
-
-
-        function questCompleted(quest, span) {
-            quest.onclick = "";
-            $(quest).removeClass("active");
-            span[0].innerHTML = "COMPLETED!";
-            span[0].className = "badge badge-success";
-            rewardQuest(quest.id);
-        }
-
-
-        function visuallyUpdateQuest(questID, data) {
-
-            var quest = document.getElementById(questID);
-            quest.value = quest.value + 1;
-            var span = quest.getElementsByTagName("span");
-            if (data.ProgressPomodoros == data.PomodorosToComplete)
-                questCompleted(quest, span);
-
-            else
-                span[0].innerHTML = data.ProgressPomodoros + "/" + data.PomodorosToComplete + " completed";
+    function questCompleted(quest, span) {
+        quest.onclick = "";
+        $(quest).removeClass("active");
+        span[0].innerHTML = "COMPLETED!";
+        span[0].className = "badge badge-success";
+        selectedQuestId = "";
+    }
 
 
 
+    function pomodoroCompleted() {
 
-        }
+        $.ajax({
+            url: "/Home/PomodoroCompleted",
+            method: "POST",
+            data: { questName: selectedQuestId },
+            success: function (data) {
 
-        async function hello() {
-            updateQuest(selectedQuestId);
+                var oldPercentage = currentPercentage;
 
-        }
+                level = data.Level;
+                totalExperience = data.Experience;
+                percentage = data.PercentageToLevel;
+                experienceToLevelUp = data.ExperienceToLevelUp
+                currentPercentage = percentage;
 
-
-        async function pomodoroCompleted() {
-
-      
-
-      $.ajax({
-           url: "/Home/AjaxGet",
-           async: false,
-       method: "GET",
-           success: function (data) {
-
-
-
-               
-
-           var oldPercentage = currentPercentage;
-
-
-
-           level = data.Level;
-           totalExperience = data.Experience;
-           percentage = data.PercentageToLevel;
-           experienceToLevelUp = data.ExperienceToLevelUp
-           currentPercentage = percentage;
-
-           checkQuestsUnlocked();
-           handleHappyRating();
-           handleEffectiveRating();
+                checkQuestsUnlocked();
            
 
-           if (percentage < oldPercentage) {
-               percentage = percentage + (100 - oldPercentage);
-               //alert("Congratulation on level " + level + "! You have been awarded " +  level * 50 + " coins!");
-           } else {
-               percentage = percentage - oldPercentage;
-           }
+                if (percentage < oldPercentage) {
+                    percentage = percentage + (100 - oldPercentage);
+                    //alert("Congratulation on level " + level + "! You have been awarded " +  level * 50 + " coins!");
+                } else {
+                    percentage = percentage - oldPercentage;
+                }
                 iterate();
 
-       }
-            });
-
-
-            
-            await hello();
-
+            }
+        });    
+        getUpdatedQuestData(selectedQuestId);
+        handleHappyRating();
+        handleEffectiveRating();
     }
 
     function handleEffectiveRating() {
 
-
-            bootbox.prompt("Please enter how effective your pomodoro was from 1(Very bad) to 5(Very good).", function (result) {
-                if (isNaN(result) || result > 5 || result < 1) {
-                    handleEffectiveRating();
-                    return;
-                } else {
-                    postEffectiveRating(result);
-                }
-            });
-
+        bootbox.prompt("Please enter how effective your pomodoro was from 1(Very bad) to 5(Very good).", function (result) {
+            if (isNaN(result) || result > 5 || result < 1) {
+                handleEffectiveRating();
+                return;
+            } else {
+                postEffectiveRating(result);
+            }
+        });
     }
 
 
     function postEffectiveRating(effectiveRating) {
 
-
-
         $.ajax({
             url: "/Home/AjaxPost",
             method: "POST",
             data: { id: effectiveRating},
+                success: function (data) {}
+            }
+        );
+    }
+
+    function handleHappyRating() {
+
+        bootbox.prompt("Please enter the enjoyment of this pomodoro from 1(Very bad) to 5(Very good).", function (result) {
+
+            if (isNaN(result) || result > 5 || result < 1) {
+                handleHappyRating();
+                return;
+            } else {
+                postHappyRating(result);
+            }
+        }
+        );
+
+    }
+
+
+    function postHappyRating(effectiveRating) {
+
+        $.ajax({
+            url: "/Home/AjaxPostHappy",
+            method: "POST",
+            data: { id: effectiveRating },
             success: function (data) {}
         });
 
-        }
-
-        function handleHappyRating() {
-
-
-            bootbox.prompt("Please enter the enjoyment of this pomodoro from 1(Very bad) to 5(Very good).", function (result) {
-                if (isNaN(result) || result > 5 || result < 1) {
-                    handleHappyRating();
-                    return;
-                } else {
-                    postHappyRating(result);
-                }
-            });
-
-        }
-
-
-        function postHappyRating(effectiveRating) {
-
-
-
-            $.ajax({
-                url: "/Home/AjaxPostHappy",
-                method: "POST",
-                data: { id: effectiveRating },
-                success: function (data) {}
-            });
-
-        }
+    }
 
 
 
 
-   //D3JS CODE BELOW - COULD NOT EASILY SEPERATE INTO OWN FILE
+    //D3JS CODE BELOW - COULD NOT EASILY SEPERATE INTO OWN FILE
 
-   var wrapper = document.getElementById('progress');
-   var start = 0;
+    var wrapper = document.getElementById('progress');
+    var start = 0;
 
 
-   var colours = {
-       fill: '#337ab7',
-       track: '#555555',
-       text: '#337ab7',
-       stroke: '#FFFFFF',
+    var colours = {
+        fill: '#337ab7',
+        track: '#555555',
+        text: '#337ab7',
+        stroke: '#FFFFFF',
+    }
+
+    var radius = 150;
+    var border = 15;
+    var strokeSpacing = 4;
+    var endAngle = Math.PI * 2;
+    var formatText = d3.format('.0%');
+    var boxSize = radius * 2;
+    var progress = start;
+    var step = percentage < start ? -0.01 : 0.01;
+
+    //Define the circle
+    var circle = d3.arc()
+        .startAngle(0)
+        .innerRadius(radius)
+        .outerRadius(radius - border);
+
+    //setup SVG wrapper
+    var svg = d3.select(wrapper)
+        .append('svg')
+        .attr('width', boxSize)
+        .attr('height', boxSize);
+
+    // ADD Group container
+    var g = svg.append('g')
+        .attr('transform', 'translate(' + boxSize / 2 + ',' + boxSize / 2 + ')');
+
+    //Setup track
+    var track = g.append('g').attr('class', 'radial-progress');
+    track.append('path')
+        .attr('class', 'radial-progress__background')
+        .attr('fill', colours.track)
+        .attr('stroke', colours.stroke)
+        .attr('stroke-width', strokeSpacing + 'px')
+        .attr('d', circle.endAngle(endAngle));
+
+    //Add colour fill
+    var value = track.append('path')
+        .attr('class', 'radial-progress__value')
+        .attr('fill', colours.fill)
+        .attr('stroke', colours.stroke)
+        .attr('stroke-width', strokeSpacing + 'px');
+
+    //Add text value
+    var numberText = track.append('text')
+        .style("font-size", "20px")
+        .style("font-weight", "bold")
+        .attr('class', 'radial-progress__text')
+        .attr('fill', colours.text)
+        .attr('text-anchor', 'middle')
+        .attr('dy', '-50');
+
+    var numberText2 = track.append('text')
+        .style("font-size", "20px")
+        .style("font-weight", "bold")
+        .attr('class', 'radial-progress__text')
+        .attr('fill', colours.text)
+        .attr('text-anchor', 'middle')
+        .attr('dy', '0');
+
+    var numberText3 = track.append('text')
+        .style("font-size", "20px")
+        .style("font-weight", "bold")
+        .attr('class', 'radial-progress__text')
+        .attr('fill', colours.text)
+        .attr('text-anchor', 'middle')
+        .attr('dy', '50');
+
+
+    async function update(progress) {
+        //update position of endAngle
+        value.attr('d', circle.endAngle(endAngle * progress));
+        //update text value
+        numberText.text("Level : " + level);
+        numberText2.text("% To level : " + formatText(progress));
+        numberText3.text("XP To Level : " + experienceToLevelUp);
    }
 
-   var radius = 150;
-   var border = 15;
-   var strokeSpacing = 4;
-   var endAngle = Math.PI * 2;
-   var formatText = d3.format('.0%');
-   var boxSize = radius * 2;
-   var progress = start;
-   var step = percentage < start ? -0.01 : 0.01;
+    function iterate() {
+        //call update to begin animation
+        update(progress);
+        if (percentage > 0) {
+            //reduce count till it reaches 0
+            percentage--;
+            //increase progress
 
-   //Define the circle
-   var circle = d3.arc()
-       .startAngle(0)
-       .innerRadius(radius)
-       .outerRadius(radius - border);
+            progress += step;
 
-   //setup SVG wrapper
-   var svg = d3.select(wrapper)
-       .append('svg')
-       .attr('width', boxSize)
-       .attr('height', boxSize);
+            if (progress > 0.995) {
+                progress = 0;
+            }
+            //Control the speed of the fill
+            setTimeout(iterate, 10);
+        } else {
+        }
+    }
 
-   // ADD Group container
-   var g = svg.append('g')
-       .attr('transform', 'translate(' + boxSize / 2 + ',' + boxSize / 2 + ')');
-
-   //Setup track
-   var track = g.append('g').attr('class', 'radial-progress');
-       track.append('path')
-       .attr('class', 'radial-progress__background')
-       .attr('fill', colours.track)
-       .attr('stroke', colours.stroke)
-       .attr('stroke-width', strokeSpacing + 'px')
-       .attr('d', circle.endAngle(endAngle));
-
-   //Add colour fill
-   var value = track.append('path')
-       .attr('class', 'radial-progress__value')
-       .attr('fill', colours.fill)
-       .attr('stroke', colours.stroke)
-       .attr('stroke-width', strokeSpacing + 'px');
-
-   //Add text value
-   var numberText = track.append('text')
-       .style("font-size", "20px")
-       .style("font-weight", "bold")
-       .attr('class', 'radial-progress__text')
-       .attr('fill', colours.text)
-       .attr('text-anchor', 'middle')
-       .attr('dy', '-50');
-
-   var numberText2 = track.append('text')
-       .style("font-size", "20px")
-       .style("font-weight", "bold")
-       .attr('class', 'radial-progress__text')
-       .attr('fill', colours.text)
-       .attr('text-anchor', 'middle')
-       .attr('dy', '0');
-
-   var numberText3 = track.append('text')
-       .style("font-size", "20px")
-       .style("font-weight", "bold")
-       .attr('class', 'radial-progress__text')
-       .attr('fill', colours.text)
-       .attr('text-anchor', 'middle')
-       .attr('dy', '50');
+    iterate();
 
 
-   async function update(progress) {
-       //update position of endAngle
-       value.attr('d', circle.endAngle(endAngle * progress));
-       //update text value
-       numberText.text("Level : " + level);
-       numberText2.text("% To level : " + formatText(progress));
-       numberText3.text("XP To Level : " + experienceToLevelUp);
-
-   }
-
-   async function iterate() {
-       //call update to begin animation
-       await update(progress);
-       if (percentage > 0) {
-           //reduce count till it reaches 0
-           percentage--;
-           //increase progress
-
-           progress += step;
-
-           if (progress > 0.995) {
-               progress = 0;
-           }
-           //Control the speed of the fill
-           await setTimeout(await iterate, 10);
-       }
-   }
-
-   iterate();
-
-
-    </script>
+</script>
 }

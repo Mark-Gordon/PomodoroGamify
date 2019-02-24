@@ -33,33 +33,52 @@ namespace PomodoroGamify.Controllers
             return View(user);
         }
 
-        [HttpGet]
-        public ActionResult AjaxGet()
+        [HttpPost]
+        public ActionResult PomodoroCompleted(string questName)
         {
-            System.Diagnostics.Debug.WriteLine("\n\n\n\n\nSTART GET\n\n\n");
+            System.Diagnostics.Debug.WriteLine("quest name: " + questName);
+            if(questName != "")
+            {
+                UpdateQuest(questName);
+            }
 
             string userID = User.Identity.GetUserId();
 
             var user = _context.UserModels.SingleOrDefault(c => c.Id == userID);
 
-            user.Experience += 25;
+            if (questName.Equals(""))
+            {
+                user.Experience += 25;
 
-            user.Level = Convert.ToInt32(Math.Max(Math.Floor(8.75 * Math.Log(user.Experience + 100) + -40), 1));
+                user.Level = Convert.ToInt32(Math.Max(Math.Floor(8.75 * Math.Log(user.Experience + 100) + -40), 1));
 
-            user.ExperienceOfCurrentLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level));
+                user.ExperienceOfCurrentLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level));
 
-            user.ExperienceOfNextLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level + 1));
-
+                user.ExperienceOfNextLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level + 1));
+            }
 
 
 
             _context.SaveChanges();
 
             var updatedUserData = new { Experience = user.Experience, Level = user.Level, PercentageToLevel = user.getPercentageToLevel(), ExperienceToLevelUp = user.GetExperienceToLevelUp() };
-            System.Diagnostics.Debug.WriteLine(updatedUserData);
 
-            System.Diagnostics.Debug.WriteLine("\n\n\n\n\nFINISH GET\n\n\n");
+            System.Diagnostics.Debug.WriteLine("FINISH GET");
             return Json(updatedUserData, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult GetUpdateQuestData(string questName)
+        {
+
+            string userID = User.Identity.GetUserId();
+            var quest = _context.Quests.SingleOrDefault(c => c.QuestName == questName);
+            var questID = quest.Id;
+            var questProgress = _context.UserQuestProgress.SingleOrDefault(c => c.Id == (userID + "-" + questID));
+
+            var updatedQuestProgress = new { ProgressPomodoros = questProgress.ProgressPomodoros, PomodorosToComplete = quest.NumberOfPomodorosToComplete };
+
+            return Json(updatedQuestProgress, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -67,16 +86,18 @@ namespace PomodoroGamify.Controllers
         {
 
             string userID = User.Identity.GetUserId();
-            System.Diagnostics.Debug.WriteLine("\n\n\n\n\npsotWORK\n\n\n");
-            System.Diagnostics.Debug.WriteLine(questName);
+            System.Diagnostics.Debug.WriteLine("UPDATE QUEST");
             var quest = _context.Quests.SingleOrDefault(c => c.QuestName == questName);
             var questID = quest.Id;
-            System.Diagnostics.Debug.WriteLine(questID);
-            System.Diagnostics.Debug.WriteLine(userID);
             var questProgress = _context.UserQuestProgress.SingleOrDefault(c => c.Id == (userID + "-" + questID));
             questProgress.ProgressPomodoros = questProgress.ProgressPomodoros + 1;
 
             _context.SaveChanges();
+            System.Diagnostics.Debug.WriteLine("prog : " + questProgress.ProgressPomodoros + " numtocomp : " + quest.NumberOfPomodorosToComplete);
+            if (questProgress.ProgressPomodoros == quest.NumberOfPomodorosToComplete)
+            {
+                RewardQuest(questName);
+            }
 
             var updatedQuestProgress = new { ProgressPomodoros = questProgress.ProgressPomodoros, PomodorosToComplete =  quest.NumberOfPomodorosToComplete};
 
@@ -109,12 +130,11 @@ namespace PomodoroGamify.Controllers
         {
             string userID = User.Identity.GetUserId();
             var user = _context.UserModels.SingleOrDefault(c => c.Id == userID);
-            System.Diagnostics.Debug.WriteLine("\n\n\n\n\nReward Quest\n\n\n");
-            System.Diagnostics.Debug.WriteLine(questName);
+            System.Diagnostics.Debug.WriteLine("Reward Quest");
+
             var quest = _context.Quests.SingleOrDefault(c => c.QuestName == questName);
             var rewardExerpience = quest.RewardExperience;
-            System.Diagnostics.Debug.WriteLine(rewardExerpience);
-            System.Diagnostics.Debug.WriteLine(userID);
+
 
             user.Experience += rewardExerpience;
 

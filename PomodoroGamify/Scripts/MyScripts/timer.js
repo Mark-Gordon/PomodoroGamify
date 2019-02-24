@@ -63,7 +63,6 @@ function startTimer(duration, display) {
         display.text(minutes + ":" + seconds);
 
         if (--duration < 0) {
-            updateExperience();
             $("#time").text("EXPIRED!");
             jQuery("#timerStartBtn").prop("disabled", false);
             jQuery("#timerStopBtn").prop("disabled", true);
