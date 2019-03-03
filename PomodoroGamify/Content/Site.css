@@ -56,6 +56,9 @@ textarea {
     border-width: 5px;
 }
 
+.content-table td {
+    text-align: center;
+}
 
 
 

@@ -195,6 +195,13 @@ namespace PomodoroGamify.Controllers
                         NumberOfFailedPomodos = 0
                     };
 
+                    var userBadges = new UserBadges
+                    {
+                        Id = user.Id,
+                        BronzeBadges = 0,
+                        SilverBadges = 0,
+                        GoldBadges = 0
+                    };
 
                     var userModel = new UserModel
                     {
@@ -203,6 +210,7 @@ namespace PomodoroGamify.Controllers
                         Pomodoro = pomodoro,
                         PomodoroId = user.Id,
                         Effective = effective,
+                        UserBadges = userBadges,
                         EffectiveID = user.Id,
                         Enjoyment = enjoyment,
                         EnjoymentID = user.Id

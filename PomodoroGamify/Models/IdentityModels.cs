@@ -32,6 +32,7 @@ namespace PomodoroGamify.Models
         public DbSet<UserModel> UserModels { get; set; }
         public DbSet<Quest> Quests { get; set; }
         public DbSet<UserQuestProgress> UserQuestProgress { get; set; }
+        public DbSet<PomodoroLog> PomodoroLog { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

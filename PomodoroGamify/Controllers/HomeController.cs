@@ -33,37 +33,89 @@ namespace PomodoroGamify.Controllers
             return View(user);
         }
 
+        public int RewardTasks()
+        {
+            var rewardExperience = 0;
+            string userID = User.Identity.GetUserId();
+            DateTime DateToday = DateTime.Today.AddDays(-1);
+            DateTime SevenDaysAgo = DateTime.Today.AddDays(-7);
+            DateTime DateThisWeek = DateToday.AddDays(-(int)DateToday.DayOfWeek + (int)DayOfWeek.Monday);
+            DateTime DateThisMonth = new DateTime(DateToday.Year, DateToday.Month, 1);
+
+            var pomCountToday = _context.PomodoroLog.Where(c => c.UserModelId == userID).Where(c => c.DateCompleted > SevenDaysAgo).Count();
+            var pomCountThisWeek = _context.PomodoroLog.Where(c => c.UserModelId == userID).Where(c => c.DateCompleted > DateThisWeek).Count();
+            var pomCountThisMonth = _context.PomodoroLog.Where(c => c.UserModelId == userID).Where(c => c.DateCompleted > DateThisMonth).Count();
+
+
+            var user = _context.UserModels.Include(c => c.UserBadges).Single(c => c.Id == userID);
+
+            if (pomCountToday == 9)
+            {
+                rewardExperience += 50;
+                user.UserBadges.BronzeBadges += 1;
+            }
+            System.Diagnostics.Debug.WriteLine("POM COUNT: " + pomCountThisWeek);
+            if (pomCountThisWeek == 49) {
+                System.Diagnostics.Debug.WriteLine("IN HERE");
+                rewardExperience += 250;
+                user.UserBadges.SilverBadges += 1;
+            }
+            if(pomCountThisMonth == 199){
+                rewardExperience += 500;
+                user.UserBadges.GoldBadges += 1;
+            }
+
+            return rewardExperience;
+
+        }
+
         [HttpPost]
         public ActionResult PomodoroCompleted(string questName)
         {
-            System.Diagnostics.Debug.WriteLine("quest name: " + questName);
+
             if(questName != "")
             {
                 UpdateQuest(questName);
             }
 
+            
+
             string userID = User.Identity.GetUserId();
 
             var user = _context.UserModels.SingleOrDefault(c => c.Id == userID);
+
+            int taskRewardExperience = RewardTasks();
+            user.Experience += taskRewardExperience;
 
             if (questName.Equals(""))
             {
                 user.Experience += 25;
 
-                user.Level = Convert.ToInt32(Math.Max(Math.Floor(8.75 * Math.Log(user.Experience + 100) + -40), 1));
 
-                user.ExperienceOfCurrentLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level));
-
-                user.ExperienceOfNextLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level + 1));
             }
+            user.Level = Convert.ToInt32(Math.Max(Math.Floor(8.75 * Math.Log(user.Experience + 100) + -40), 1));
+
+            user.ExperienceOfCurrentLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level));
+
+            user.ExperienceOfNextLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level + 1));
+
+            var pomLog = new PomodoroLog
+            {
+                DateCompleted = DateTime.Now,
+                UserModelId = user.Id
+            };
+
+            _context.PomodoroLog.Add(pomLog);
+
 
 
 
             _context.SaveChanges();
 
+
             var updatedUserData = new { Experience = user.Experience, Level = user.Level, PercentageToLevel = user.getPercentageToLevel(), ExperienceToLevelUp = user.GetExperienceToLevelUp() };
 
-            System.Diagnostics.Debug.WriteLine("FINISH GET");
+
             return Json(updatedUserData, JsonRequestBehavior.AllowGet);
         }
 
@@ -86,14 +138,14 @@ namespace PomodoroGamify.Controllers
         {
 
             string userID = User.Identity.GetUserId();
-            System.Diagnostics.Debug.WriteLine("UPDATE QUEST");
+
             var quest = _context.Quests.SingleOrDefault(c => c.QuestName == questName);
             var questID = quest.Id;
             var questProgress = _context.UserQuestProgress.SingleOrDefault(c => c.Id == (userID + "-" + questID));
             questProgress.ProgressPomodoros = questProgress.ProgressPomodoros + 1;
 
             _context.SaveChanges();
-            System.Diagnostics.Debug.WriteLine("prog : " + questProgress.ProgressPomodoros + " numtocomp : " + quest.NumberOfPomodorosToComplete);
+           
             if (questProgress.ProgressPomodoros == quest.NumberOfPomodorosToComplete)
             {
                 RewardQuest(questName);
@@ -107,7 +159,7 @@ namespace PomodoroGamify.Controllers
         [HttpPost]
         public ActionResult AjaxPost(string id)
         {
-            System.Diagnostics.Debug.WriteLine("\n\n\n\n\npsotWORK\n\n\n");
+
             int rating = Int32.Parse(id);
 
             string userID = User.Identity.GetUserId();
@@ -130,7 +182,7 @@ namespace PomodoroGamify.Controllers
         {
             string userID = User.Identity.GetUserId();
             var user = _context.UserModels.SingleOrDefault(c => c.Id == userID);
-            System.Diagnostics.Debug.WriteLine("Reward Quest");
+
 
             var quest = _context.Quests.SingleOrDefault(c => c.QuestName == questName);
             var rewardExerpience = quest.RewardExperience;
@@ -186,13 +238,53 @@ namespace PomodoroGamify.Controllers
             return Json("", JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public ActionResult GetBadges()
+        {
 
+            string userID = User.Identity.GetUserId();
+
+
+            var user = _context.UserModels.Include(c => c.UserBadges).Single(c => c.Id == userID);
+
+
+
+            var userBadges = new { bronzeBadges = user.UserBadges.BronzeBadges, silverBadges = user.UserBadges.SilverBadges, goldBadges = user.UserBadges.GoldBadges };
+
+
+
+            return Json(userBadges, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetTasks()
+        {
+
+
+            string userID = User.Identity.GetUserId();
+
+            DateTime DateToday = DateTime.Today.AddDays(-1);
+            DateTime SevenDaysAgo = DateTime.Today.AddDays(-7);
+            DateTime DateThisWeek = DateToday.AddDays(-(int)DateToday.DayOfWeek + (int)DayOfWeek.Monday);
+            DateTime DateThisMonth = new DateTime(DateToday.Year, DateToday.Month, 1);
+
+            var pomCountToday = _context.PomodoroLog.Where(c => c.UserModelId == userID).Where(c => c.DateCompleted > SevenDaysAgo).Count();
+            var pomCountThisWeek = _context.PomodoroLog.Where(c => c.UserModelId == userID).Where(c => c.DateCompleted > DateThisWeek).Count();
+            var pomCountThisMonth = _context.PomodoroLog.Where(c => c.UserModelId == userID).Where(c => c.DateCompleted > DateThisMonth).Count();
+
+            var pomCount = new { PomsToday = pomCountToday, PomsThisWeek = pomCountThisWeek, pomCountThisMonth = pomCountThisMonth};
+
+            int[] pomCountArr = new int[3] { pomCountToday , pomCountThisWeek , pomCountThisMonth };
+
+
+            return Json(pomCountArr, JsonRequestBehavior.AllowGet);
+        }
 
 
         [HttpGet]
         public ActionResult GetQuests()
         {
-            System.Diagnostics.Debug.WriteLine("\n\n\n\n\nQUESTS!\n\n\n");
+
 
             string userID = User.Identity.GetUserId();
 
@@ -205,16 +297,9 @@ namespace PomodoroGamify.Controllers
 
             foreach (UserQuestProgress a in user.userQuestProgresses)
             {
-                System.Diagnostics.Debug.WriteLine("---------");
-                var quest = _context.Quests.Single(cat => cat.Id == a.QuestId);
-                System.Diagnostics.Debug.WriteLine(quest.Id);
-                System.Diagnostics.Debug.WriteLine(quest.QuestName);
 
-                System.Diagnostics.Debug.WriteLine(quest.QuestDescription);
-                System.Diagnostics.Debug.WriteLine(quest.LevelRequirement);
-                System.Diagnostics.Debug.WriteLine(quest.NumberOfPomodorosToComplete);
-                System.Diagnostics.Debug.WriteLine(quest.RewardExperience);
-                System.Diagnostics.Debug.WriteLine(a.ProgressPomodoros);
+                var quest = _context.Quests.Single(cat => cat.Id == a.QuestId);
+
 
 
                 questArray[i] = new string[] {a.QuestId, quest.QuestName, quest.QuestDescription, quest.LevelRequirement.ToString(),

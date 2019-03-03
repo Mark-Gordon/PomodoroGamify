@@ -29,15 +29,54 @@
         </div>
     </div>
     <div class="row">
-        <h2>&nbsp;&nbsp;Quests</h2>
-        <p>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Quests providing bonus experience at the cost of delaying the pomodoro<br />
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;experience gains until the quest is complete!
-        </p>
-        <div class="col-lg-6" style="overflow:auto; height:400px;">
+        <div class="col-lg-5">
+            <h2>Quests</h2>
+            <p>
+                Quests providing bonus experience at the cost of delaying the pomodoro
+                experience gains until the quest is complete!
+            </p>
+            <div style="overflow:auto; height:400px;">
 
-            <ul id="quests" class="list-group">
-            </ul>
+                <ul id="quests" class="list-group"></ul>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <h2>Tasks</h2>
+            <p>
+                Completing any of these tasks will reward you with badges and bonus experience!
+            </p>
+            <div style=" height:400px;">
+
+                <ul id="tasks" class="list-group">
+                    <li id="today" value=0 class="list-group-item d-flex justify-content-between align-items-center">
+                        <text><b>Complete 10 pomodoros today!</b><br />Rewards 50 experience and a bronze badge!</text>
+
+                        <span id="task-10">1</span>
+                    </li>
+                    <li id="week" value=0 class="list-group-item d-flex justify-content-between align-items-center">
+                        <text><b>Complete 50 pomodoros this week!</b><br />Rewards 600 experience and a silver badge!</text>
+
+                        <span id="task-50">1</span>
+                    </li>
+                    <li id="month" value=0 class="list-group-item d-flex justify-content-between align-items-center">
+                        <text><b>Complete 200 pomodoros this month!</b><br />Rewards 50 experience and a gold badge!</text>
+
+                        <span id="task-200">1</span>
+                    </li>
+                </ul>
+                <table class="content-table" style="width:100%; height:25%" border="1">
+                    <tr>
+                        <td align="center"><img src="~/Images/Bronze-Badge.png" alt="Bronze Badge" height="15%"></td>
+                        <td><img src="~/Images/Silver-Badge.png" alt="Silver Badge" height="15%"></td>
+                        <td><img src="~/Images/Gold-Badge.png" alt="Gold Badge" height="15%"></td>
+                    </tr>
+                    <tr>
+                        <td id="bronzeCount">0</td>
+                        <td id="silverCount">0</td>
+                        <td id="goldCount">0</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -54,6 +93,68 @@
 
 
     getQuests();
+    getTasks();
+
+    //Checks quests status and acts appropriately (Completed, unlocked, locked)
+    function checkTasks(pomCount) {
+
+
+        var ul = document.getElementById("tasks");
+        var items = ul.getElementsByTagName("span");
+       
+        for (var i = 0; i < items.length; ++i) {
+            var numToComplete = items[i].id.split("-");
+                $("#" + items[i].id).addClass("badge badge-primary badge-pill");
+            var progress = document.getElementById(items[i].id).parentElement.value;
+            if (pomCount[i] >= numToComplete[1]) {
+                    document.getElementById(items[i].id).innerHTML = "COMPLETED!";
+                document.getElementById(items[i].id).className = "badge badge-success";
+            } else {
+                var numToComplete = items[i].id.split("-");
+                document.getElementById(items[i].id).innerHTML = pomCount[i] + "/" + numToComplete[1] + " completed";
+                }
+
+        }
+
+        getBadges();
+
+
+    }
+
+
+    function loadBadges(badges) {
+
+        document.getElementById('bronzeCount').innerHTML = badges.bronzeBadges;
+        document.getElementById('silverCount').innerHTML = badges.silverBadges;
+        document.getElementById('goldCount').innerHTML = badges.goldBadges;
+
+    }
+
+    function getBadges() {
+
+        $.ajax({
+            url: "/Home/GetBadges",
+            method: "GET",
+            success: function (badges) {
+                loadBadges(badges);
+            }
+        });
+        return true;
+    }
+
+
+    function getTasks() {
+
+        $.ajax({
+            url: "/Home/GetTasks",
+            method: "GET",
+            success: function (pomCount) {
+                
+                checkTasks(pomCount);
+            }
+        });
+        return true;
+    }
 
     var quests;
     //fetches the quests from the server on page load-up
@@ -111,7 +212,7 @@
                 $("#" + items[i].id).removeClass("btn-danger badge");
                 $("#" + items[i].id).addClass("badge badge-primary badge-pill");
                 var progress = document.getElementById(items[i].id).parentElement.value;
-                if (progress == items[i].value) {
+                if (progress >= items[i].value) {
                     document.getElementById(items[i].id).innerHTML = "COMPLETED!";
                     document.getElementById(items[i].id).className = "badge badge-success";
                     document.getElementById(items[i].id).parentElement.onclick = "";
@@ -166,14 +267,14 @@
         var quest = document.getElementById(questID);
         quest.value = quest.value + 1;
         var span = quest.getElementsByTagName("span");
-        if (data.ProgressPomodoros == data.PomodorosToComplete)
+        if ((data.ProgressPomodoros+1) == data.PomodorosToComplete)
             questCompleted(quest, span);
         else
             span[0].innerHTML = data.ProgressPomodoros + "/" + data.PomodorosToComplete + " completed";
     }
 
     function questCompleted(quest, span) {
-        quest.onclick = "";
+        $(quest).onclick = "";
         $(quest).removeClass("active");
         span[0].innerHTML = "COMPLETED!";
         span[0].className = "badge badge-success";
@@ -185,7 +286,7 @@
     function pomodoroCompleted() {
 
         $.ajax({
-            url: "/Home/PomodoroCompleted",
+            url: "/Home/ ",
             method: "POST",
             data: { questName: selectedQuestId },
             success: function (data) {
@@ -208,12 +309,14 @@
                     percentage = percentage - oldPercentage;
                 }
                 iterate();
-
+                getTasks();
             }
-        });    
+        });
+       
         getUpdatedQuestData(selectedQuestId);
-        handleHappyRating();
-        handleEffectiveRating();
+       // handleHappyRating();
+       // handleEffectiveRating();
+
     }
 
     function handleEffectiveRating() {

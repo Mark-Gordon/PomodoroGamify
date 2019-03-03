@@ -338,6 +338,22 @@
     <Compile Include="Migrations\201902041650399_AddEnjoymentRating.Designer.cs">
       <DependentUpon>201902041650399_AddEnjoymentRating.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201902281659509_TasksModel.cs" />
+    <Compile Include="Migrations\201902281659509_TasksModel.Designer.cs">
+      <DependentUpon>201902281659509_TasksModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902281905323_test7.cs" />
+    <Compile Include="Migrations\201902281905323_test7.Designer.cs">
+      <DependentUpon>201902281905323_test7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902281910459_datetimetest.cs" />
+    <Compile Include="Migrations\201902281910459_datetimetest.Designer.cs">
+      <DependentUpon>201902281910459_datetimetest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903030049171_AddBadges.cs" />
+    <Compile Include="Migrations\201903030049171_AddBadges.Designer.cs">
+      <DependentUpon>201903030049171_AddBadges.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Effective.cs" />
@@ -345,7 +361,9 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Pomodoro.cs" />
+    <Compile Include="Models\PomodoroLog.cs" />
     <Compile Include="Models\Quest.cs" />
+    <Compile Include="Models\UserBadges.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Models\UserNameModel.cs" />
     <Compile Include="Models\UserQuestProgress.cs" />
@@ -525,7 +543,11 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Images\105a31f73843f4c3f3227d62471da1f9.png" />
     <Content Include="Images\108153.png" />
+    <Content Include="Images\Bronze-Badge.png" />
+    <Content Include="Images\Gold-Badge.png" />
+    <Content Include="Images\Silver-Badge.png" />
     <Content Include="Scripts\bootbox.js" />
     <Content Include="Scripts\bootbox.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -816,6 +838,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201902041650399_AddEnjoymentRating.resx">
       <DependentUpon>201902041650399_AddEnjoymentRating.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902281659509_TasksModel.resx">
+      <DependentUpon>201902281659509_TasksModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902281905323_test7.resx">
+      <DependentUpon>201902281905323_test7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902281910459_datetimetest.resx">
+      <DependentUpon>201902281910459_datetimetest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903030049171_AddBadges.resx">
+      <DependentUpon>201903030049171_AddBadges.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -23,13 +23,21 @@ namespace PomodoroGamify.Models
         public Pomodoro Pomodoro { get; set; }
         public string PomodoroId { get; set; }
 
+
+
         public Effective Effective { get; set; }
         public string EffectiveID { get; set; }
 
         public Enjoyment Enjoyment { get; set; }
         public string EnjoymentID { get; set; }
 
+        public UserBadges UserBadges { get; set; }
+        public string UserBadgesId { get; set; }
+
         public IList<UserQuestProgress> userQuestProgresses { get; set; }
+
+        public IList<PomodoroLog> PomodoroLog { get; set; }
+
 
 
 
