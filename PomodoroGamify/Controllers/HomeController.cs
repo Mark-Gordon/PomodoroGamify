@@ -93,6 +93,7 @@ namespace PomodoroGamify.Controllers
 
 
             }
+            
             user.Level = Convert.ToInt32(Math.Max(Math.Floor(8.75 * Math.Log(user.Experience + 100) + -40), 1));
 
             user.ExperienceOfCurrentLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level));
@@ -111,6 +112,8 @@ namespace PomodoroGamify.Controllers
 
 
             _context.SaveChanges();
+
+            System.Diagnostics.Debug.WriteLine("HERE " + user.Experience + " -> " + user.Level + " -> " + user.getPercentageToLevel());
 
 
             var updatedUserData = new { Experience = user.Experience, Level = user.Level, PercentageToLevel = user.getPercentageToLevel(), ExperienceToLevelUp = user.GetExperienceToLevelUp() };

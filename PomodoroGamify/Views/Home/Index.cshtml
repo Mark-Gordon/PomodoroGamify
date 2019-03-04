@@ -286,7 +286,7 @@
     function pomodoroCompleted() {
 
         $.ajax({
-            url: "/Home/ ",
+            url: "/Home/PomodoroCompleted",
             method: "POST",
             data: { questName: selectedQuestId },
             success: function (data) {
