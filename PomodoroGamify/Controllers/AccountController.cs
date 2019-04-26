@@ -203,10 +203,20 @@ namespace PomodoroGamify.Controllers
                         GoldBadges = 0
                     };
 
+                    var levelling = new Levelling
+                    {
+                        Id = user.Id,
+                        Experience = 0,
+                        Level = 1,
+                        ExperienceOfCurrentLevel = 0,
+                        ExperienceOfNextLevel = 0
+                    };
+
                     var userModel = new UserModel
                     {
                         Id = user.Id,
-                        Level = 1,
+                        Levelling = levelling,
+                        LevellingID = user.Id,
                         Pomodoro = pomodoro,
                         PomodoroId = user.Id,
                         Effective = effective,

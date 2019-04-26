@@ -354,11 +354,16 @@
     <Compile Include="Migrations\201903030049171_AddBadges.Designer.cs">
       <DependentUpon>201903030049171_AddBadges.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201903041217440_SeperateLevelling.cs" />
+    <Compile Include="Migrations\201903041217440_SeperateLevelling.Designer.cs">
+      <DependentUpon>201903041217440_SeperateLevelling.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Effective.cs" />
     <Compile Include="Models\Enjoyment.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\Levelling.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Pomodoro.cs" />
     <Compile Include="Models\PomodoroLog.cs" />
@@ -650,6 +655,7 @@
     <Content Include="Content\DataTables\css\common.scss" />
     <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <None Include="Properties\PublishProfiles\CustomProfile1.pubxml" />
+    <None Include="Properties\PublishProfiles\CustomProfile2.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\PomodoroGamifyTest - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.0.0-vsdoc.js" />
@@ -850,6 +856,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903030049171_AddBadges.resx">
       <DependentUpon>201903030049171_AddBadges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903041217440_SeperateLevelling.resx">
+      <DependentUpon>201903041217440_SeperateLevelling.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

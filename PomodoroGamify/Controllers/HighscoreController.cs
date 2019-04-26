@@ -5,6 +5,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using System.Linq;
+using System.Data.Entity;
 
 namespace PomodoroGamify.Controllers
 {
@@ -22,7 +24,7 @@ namespace PomodoroGamify.Controllers
         public ActionResult Index()
         {
 
-            var users = _context.UserModels.ToList();
+            var users = _context.UserModels.Include(c => c.Levelling).ToList();
 
             return View(users);
         }
@@ -32,9 +34,9 @@ namespace PomodoroGamify.Controllers
 
             string userID = User.Identity.GetUserId();
 
-            var user = _context.UserModels.SingleOrDefault(c => c.Id == userID);
+            var user = _context.UserModels.Include(c => c.Levelling).SingleOrDefault(c => c.Id == userID);
 
-            user.Experience += 25;
+            user.Levelling.Experience += 25;
 
             double Level = Math.Max(Math.Floor(8.75 * Math.Log(25 + 100) + -40), 1);
 

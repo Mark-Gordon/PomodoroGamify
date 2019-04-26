@@ -12,13 +12,8 @@ namespace PomodoroGamify.Models
         [Key, ForeignKey("ApplicationUser")]
         public string Id { get; set; }
 
-        public int Experience { get; set; }
-
-        public int Level { get; set; } = 1;
-
-        public int ExperienceOfNextLevel { get; set; }
-
-        public int ExperienceOfCurrentLevel { get; set; }
+        public Levelling Levelling { get; set; }
+        public string LevellingID { get; set; }
 
         public Pomodoro Pomodoro { get; set; }
         public string PomodoroId { get; set; }
@@ -50,7 +45,7 @@ namespace PomodoroGamify.Models
 
         public double GetExperienceToLevelUp()
         {
-            return (Math.Ceiling(Math.Exp(((Level + 1) + 40) / 8.75)) - 100) - Experience;
+            return (Math.Ceiling(Math.Exp(((Levelling.Level + 1) + 40) / 8.75)) - 100) - Levelling.Experience;
         }
 
         public double GetExperienceToLevel(int lev)
@@ -60,13 +55,13 @@ namespace PomodoroGamify.Models
 
         public int getPercentageToLevel()
         {
-            if ((ExperienceOfNextLevel - ExperienceOfCurrentLevel) == 0)
+            if ((Levelling.ExperienceOfNextLevel - Levelling.ExperienceOfCurrentLevel) == 0)
             {
                 return 0;
             }
             else
             {
-                return ((Experience - ExperienceOfCurrentLevel) * 100) / (ExperienceOfNextLevel - ExperienceOfCurrentLevel);
+                return ((Levelling.Experience - Levelling.ExperienceOfCurrentLevel) * 100) / (Levelling.ExperienceOfNextLevel - Levelling.ExperienceOfCurrentLevel);
             }
         }
 

@@ -28,7 +28,7 @@ namespace PomodoroGamify.Controllers
         {
             string userID = User.Identity.GetUserId();
 
-            var user = _context.UserModels.SingleOrDefault(c => c.Id == userID);
+            var user = _context.UserModels.Include(c => c.Levelling).SingleOrDefault(c => c.Id == userID);
 
             return View(user);
         }
@@ -82,23 +82,23 @@ namespace PomodoroGamify.Controllers
 
             string userID = User.Identity.GetUserId();
 
-            var user = _context.UserModels.SingleOrDefault(c => c.Id == userID);
+            var user = _context.UserModels.Include(c => c.Levelling).SingleOrDefault(c => c.Id == userID);
 
             int taskRewardExperience = RewardTasks();
-            user.Experience += taskRewardExperience;
+            user.Levelling.Experience += taskRewardExperience;
 
             if (questName.Equals(""))
             {
-                user.Experience += 25;
+                user.Levelling.Experience += 25;
 
 
             }
             
-            user.Level = Convert.ToInt32(Math.Max(Math.Floor(8.75 * Math.Log(user.Experience + 100) + -40), 1));
+            user.Levelling.Level = Convert.ToInt32(Math.Max(Math.Floor(8.75 * Math.Log(user.Levelling.Experience + 100) + -40), 1));
 
-            user.ExperienceOfCurrentLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level));
+            user.Levelling.ExperienceOfCurrentLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Levelling.Level));
 
-            user.ExperienceOfNextLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level + 1));
+            user.Levelling.ExperienceOfNextLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Levelling.Level + 1));
 
             var pomLog = new PomodoroLog
             {
@@ -113,10 +113,10 @@ namespace PomodoroGamify.Controllers
 
             _context.SaveChanges();
 
-            System.Diagnostics.Debug.WriteLine("HERE " + user.Experience + " -> " + user.Level + " -> " + user.getPercentageToLevel());
+            System.Diagnostics.Debug.WriteLine("HERE " + user.Levelling.Experience + " -> " + user.Levelling.Level + " -> " + user.getPercentageToLevel());
 
 
-            var updatedUserData = new { Experience = user.Experience, Level = user.Level, PercentageToLevel = user.getPercentageToLevel(), ExperienceToLevelUp = user.GetExperienceToLevelUp() };
+            var updatedUserData = new { Experience = user.Levelling.Experience, Level = user.Levelling.Level, PercentageToLevel = user.getPercentageToLevel(), ExperienceToLevelUp = user.GetExperienceToLevelUp() };
 
 
             return Json(updatedUserData, JsonRequestBehavior.AllowGet);
@@ -184,26 +184,26 @@ namespace PomodoroGamify.Controllers
         public ActionResult RewardQuest(string questName)
         {
             string userID = User.Identity.GetUserId();
-            var user = _context.UserModels.SingleOrDefault(c => c.Id == userID);
+            var user = _context.UserModels.Include(c => c.Levelling).SingleOrDefault(c => c.Id == userID);
 
 
             var quest = _context.Quests.SingleOrDefault(c => c.QuestName == questName);
             var rewardExerpience = quest.RewardExperience;
 
 
-            user.Experience += rewardExerpience;
+            user.Levelling.Experience += rewardExerpience;
 
-            user.Level = Convert.ToInt32(Math.Max(Math.Floor(8.75 * Math.Log(user.Experience + 100) + -40), 1));
+            user.Levelling.Level = Convert.ToInt32(Math.Max(Math.Floor(8.75 * Math.Log(user.Levelling.Experience + 100) + -40), 1));
 
-            user.ExperienceOfCurrentLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level));
+            user.Levelling.ExperienceOfCurrentLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Levelling.Level));
 
-            user.ExperienceOfNextLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Level + 1));
+            user.Levelling.ExperienceOfNextLevel = Convert.ToInt32(user.GetExperienceToLevel(user.Levelling.Level + 1));
 
 
 
             _context.SaveChanges();
 
-            var updatedUserData = new { Experience = user.Experience, Level = user.Level, PercentageToLevel = user.getPercentageToLevel(), ExperienceToLevelUp = user.GetExperienceToLevelUp(), QuestReward = quest.RewardExperience };
+            var updatedUserData = new { Experience = user.Levelling.Experience, Level = user.Levelling.Level, PercentageToLevel = user.getPercentageToLevel(), ExperienceToLevelUp = user.GetExperienceToLevelUp(), QuestReward = quest.RewardExperience };
 
             return Json(updatedUserData, JsonRequestBehavior.AllowGet);
         }
